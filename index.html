@@ -3,174 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EYE v13.0 - PREMIER MARKAS</title>
+    <title>THE EYE v15.0 - MASTER MIND CONTROL</title>
     <style>
-        :root { --green: #1b5e20; --gold: #ffd700; --blue: #0d47a1; --alert: #d84315; --pink: #ad1457; }
-        body { background: #f4f7f6; font-family: 'Segoe UI', sans-serif; margin: 0; color: #333; }
-        #bc-banner { background: linear-gradient(45deg, var(--green), #388e3c); color: #fff; padding: 12px; text-align: center; font-weight: bold; border-bottom: 3px solid var(--gold); box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .card { background: white; padding: 20px; margin: 15px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.05); border-left: 6px solid var(--green); }
-        .btn { padding: 12px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; transition: 0.3s; color: white; }
+        :root { --green: #1b5e20; --gold: #ffd700; --pink: #ff4081; --red: #d32f2f; }
+        body { background: #f0f2f5; font-family: sans-serif; margin: 0; }
+        .header { background: linear-gradient(to right, var(--green), #388e3c); color: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 4px solid var(--gold); }
+        .card { background: white; margin: 15px; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); border-left: 6px solid var(--green); }
+        button { padding: 10px; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; color: white; }
+        .btn-ban { background: var(--red); font-size: 10px; padding: 5px; }
         .btn-main { background: var(--green); width: 100%; }
-        .btn-anime { background: var(--pink); width: 100%; margin-bottom: 10px; }
-        .log-entry { background: #fffde7; border: 1px solid #ffe082; padding: 12px; border-radius: 10px; margin-bottom: 10px; font-size: 13px; line-height: 1.6; border-left: 4px solid var(--alert); color: #333; }
-        .badge { padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; outline: none; }
-        iframe { width: 100%; height: 350px; border-radius: 10px; border: 2px solid #000; background: #000; }
-        table { width: 100%; font-size: 13px; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: #777; padding: 8px; border-bottom: 2px solid #eee; }
-        td { padding: 8px; border-bottom: 1px solid #eee; }
+        input { width: 100%; padding: 10px; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; box-sizing: border-box; }
+        #ban-screen { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:black; color:red; flex-direction:column; justify-content:center; align-items:center; z-index:9999; text-align:center; font-family: 'Courier New', monospace; }
     </style>
 </head>
 <body onload="bootSystem()">
 
-<div id="bc-banner">🌙 THE EYE v13.0: <span id="bc-text">Menunggu Jam 3 Subuh...</span></div>
+<div id="ban-screen">
+    <h1>⚠️ IP BLOCKED ⚠️</h1>
+    <p>ANDA TELAH DIBLOKIR OLEH SISTEM MASTER MIND CONTROL.</p>
+    <p>HUBUNGI LEAD DEV <b>KALZ</b> UNTUK AKTIVASI ULANG.</p>
+</div>
 
-<div id="auth-box" style="display:flex; justify-content:center; align-items:center; min-height:85vh;">
-    <div style="background:white; padding:40px; border-radius:25px; box-shadow:0 20px 40px rgba(0,0,0,0.1); width:320px; text-align:center;">
-        <h1 style="color:var(--green); margin:0;">THE EYE</h1>
-        <p style="font-size:12px; color:#888; margin-bottom:20px;">Premium Intel System v13.0</p>
-        <input type="text" id="u" placeholder="ID Kalz">
-        <input type="password" id="p" placeholder="Sandi 111">
-        <button class="btn btn-main" onclick="doLogin()">MASUK MARKAS</button>
-        <div style="margin-top:15px; font-size:10px; color:var(--green);"><b>Status Satelit:</b> Online ✅</div>
+<div class="header">🌙 THE EYE v15.0 - MASTER MIND CONTROL</div>
+
+<div id="auth" style="display: flex; justify-content: center; align-items: center; min-height: 80vh;">
+    <div style="background:white; padding:30px; border-radius:20px; width:280px; text-align:center;">
+        <h2 style="color:var(--green)">COMMAND CENTER</h2>
+        <input type="text" id="user" placeholder="Username">
+        <input type="password" id="pass" placeholder="Password">
+        <button class="btn-main" onclick="doLogin()">AKSES SISTEM</button>
     </div>
 </div>
 
-<div id="dash" style="display:none; padding:10px;">
-    <div style="display:flex; justify-content:space-between; align-items:center; padding:10px;">
-        <div>
-            <b>DEV: <span id="user-display"></span></b> 
-            <span id="rank-display" class="badge" style="background:var(--blue); color:white;"></span>
-        </div>
-        <button onclick="doLogout()" style="background:none; border:1px solid red; color:red; padding:5px 10px; border-radius:5px; cursor:pointer; font-weight:bold;">LOGOUT</button>
+<div id="main-ui" style="display:none;">
+    <div style="padding:15px; display:flex; justify-content:space-between;">
+        <b>DEV: <span id="my-name"></span></b>
+        <button onclick="doLogout()" style="background:#444; padding:5px 10px;">EXIT</button>
     </div>
 
-    <div id="anime-panel" class="card" style="display:none; border-left-color: var(--pink); background: #fff0f5;">
-        <h3 style="color:var(--pink); margin-top:0;">📺 OTAKU MONITOR (ANTI BOSEN)</h3>
-        <button class="btn btn-anime" onclick="toggleTV()">BUKA / TUTUP PLAYER ANIME</button>
-        <div id="tv-box" style="display:none; margin-top:10px;">
-            <iframe id="anime-frame" src="http://googleusercontent.com/youtube.com/3"></iframe>
-            <input type="text" id="anime-link" placeholder="Paste Link Embed Anime Di Sini..." style="margin-top:10px;">
-            <button class="btn" style="background:var(--pink); width:100%;" onclick="changeAnime()">GANTI JUDUL</button>
-        </div>
+    <div id="dev-zone" class="card" style="display:none; border-left-color: var(--red);">
+        <h3 style="color:var(--red); margin:0;">🧠 MASTER MIND CONTROL</h3>
+        <p style="font-size:11px;">Kelola IP & Akun Member di sini.</p>
+        <div id="user-list-table"></div>
+        <hr>
+        <input type="text" id="nu" placeholder="User Baru">
+        <input type="text" id="np" placeholder="Pass Baru">
+        <button class="btn-main" onclick="addUser()">TAMBAH MEMBER</button>
     </div>
 
-    <div class="card" style="border-left-color: var(--alert);">
-        <h3 style="color:var(--alert); margin-top:0;">📡 RADAR INTELIJEN (LIVE)</h3>
-        <p style="font-size:11px; margin-bottom:15px;">Data akan muncul otomatis saat target klik pancingan.</p>
-        <div id="logs-container" style="max-height: 350px; overflow-y: auto;">
-            <div style="text-align:center; color:#999; padding:20px;">-- Menunggu Mangsa Terdeteksi --</div>
-        </div>
-        <button class="btn" style="background:#444; width:100%; margin-top:15px;" onclick="hapusLogs()">BERSIHKAN SEMUA DATA</button>
-    </div>
-
-    <div id="mgmt" class="card" style="display:none; border-left-color: var(--gold);">
-        <h3 style="color:#b8860b; margin-top:0;">💰 PANEL JUALAN (MEMBER/ADMIN)</h3>
-        <div id="user-table-area"></div>
-        <hr style="border:0; border-top:1px solid #eee; margin:20px 0;">
-        <h4>+ DAFTARKAN PEMBELI BARU</h4>
-        <input type="text" id="nu" placeholder="Username Pembeli">
-        <input type="text" id="np" placeholder="Password Pembeli">
-        <select id="nr">
-            <option value="MEMBER">MEMBER (Lacak Saja)</option>
-            <option value="ADMIN">ADMIN (Bisa Jualan Lagi)</option>
-        </select>
-        <button class="btn btn-main" onclick="addAcc()">AKTIVAKAN AKUN & TERIMA CUAN</button>
+    <div class="card">
+        <h3>🛰️ RADAR INTELIJEN</h3>
+        <div id="logs-view" style="font-size:12px; max-height:200px; overflow-y:auto;">Menunggu...</div>
     </div>
 </div>
 
 <script>
-    let currentLogCount = 0;
+    let myIP = "";
 
-    function bootSystem() {
-        // Init Database
-        if(!localStorage.getItem("db")) {
-            localStorage.setItem("db", JSON.stringify([{u:"kalz", p:"111", role:"OWNER"}]));
+    async function bootSystem() {
+        // Deteksi IP User
+        try {
+            const res = await fetch('https://api.ipify.org?format=json');
+            const data = await res.json();
+            myIP = data.ip;
+        } catch(e) { myIP = "127.0.0.1"; }
+
+        // Cek Blacklist
+        const blacklist = JSON.parse(localStorage.getItem("ip_blacklist")) || [];
+        if(blacklist.includes(myIP)) {
+            document.body.innerHTML = document.getElementById('ban-screen').innerHTML;
+            document.body.style.background = "black";
+            document.body.style.color = "red";
+            return;
         }
-        if(!localStorage.getItem("eye_logs")) localStorage.setItem("eye_logs", "[]");
-        
-        // Cek Sesi
-        const s = sessionStorage.getItem("user");
-        if(s) render(JSON.parse(s));
 
-        // Set Log Awal
-        currentLogCount = (JSON.parse(localStorage.getItem("eye_logs"))).length;
+        if(!localStorage.getItem("db")) {
+            localStorage.setItem("db", JSON.stringify([{u:"kalz", p:"111", role:"OWNER", ip:myIP}]));
+        }
+        
+        const sess = sessionStorage.getItem("user");
+        if(sess) renderDash(JSON.parse(sess));
     }
 
     function doLogin() {
-        const uVal = document.getElementById('u').value;
-        const pVal = document.getElementById('p').value;
         const db = JSON.parse(localStorage.getItem("db"));
-        const user = db.find(x => x.u === uVal && x.p === pVal);
-
-        if(user) {
-            sessionStorage.setItem("user", JSON.stringify(user));
-            render(user);
-        } else {
-            alert("⚠️ AKSES DITOLAK! User atau Password Salah.");
-        }
-    }
-
-    function render(u) {
-        document.getElementById('auth-box').style.display = 'none';
-        document.getElementById('dash').style.display = 'block';
-        document.getElementById('user-display').innerText = u.u.toUpperCase();
-        document.getElementById('rank-display').innerText = u.role;
+        const u = document.getElementById('user').value;
+        const p = document.getElementById('pass').value;
+        const found = db.find(x => x.u === u && x.p === p);
         
-        // Fitur berdasarkan Kasta
-        if(u.role === "OWNER" || u.role === "ADMIN") {
-            document.getElementById('anime-panel').style.display = 'block';
-            document.getElementById('mgmt').style.display = 'block';
-            showUsers();
-        }
-        updateLogs();
+        if(found) {
+            found.ip = myIP; // Update IP saat login
+            localStorage.setItem("db", JSON.stringify(db));
+            sessionStorage.setItem("user", JSON.stringify(found));
+            renderDash(found);
+        } else { alert("Akses Ditolak!"); }
     }
 
-    function updateLogs() {
-        const logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
+    function renderDash(u) {
+        document.getElementById('auth').style.display = 'none';
+        document.getElementById('main-ui').style.display = 'block';
+        document.getElementById('my-name').innerText = u.u;
         
-        // --- JIRZ KORBAN KETANGKEP ALERT ---
-        if(logs.length > currentLogCount) {
-            alert("🔥 JIRZ KORBAN KETANGKEP NOH! CEK LOGS!");
-            currentLogCount = logs.length;
+        if(u.role === "OWNER") {
+            document.getElementById('dev-zone').style.display = 'block';
+            refreshUsers();
         }
-
-        const container = document.getElementById('logs-container');
-        if(logs.length > 0) {
-            container.innerHTML = logs.map(l => `<div class="log-entry">${l}</div>`).join('');
-        } else {
-            container.innerHTML = `<div style="text-align:center; color:#999; padding:20px;">-- Menunggu Mangsa Terdeteksi --</div>`;
-        }
+        loadLogs();
     }
 
-    function showUsers() {
+    function refreshUsers() {
         const db = JSON.parse(localStorage.getItem("db"));
-        let h = `<table><tr><th>USER</th><th>ROLE</th><th>AKSI</th></tr>`;
-        db.forEach((user, index) => {
-            h += `<tr>
-                <td>${user.u}</td>
-                <td><span class="badge" style="background:#eee; color:#333;">${user.role}</span></td>
-                <td>${user.role === 'OWNER' ? '⭐' : '<button onclick="hapusUser('+index+')" style="color:red; border:none; background:none; cursor:pointer;">Hapus</button>'}</td>
+        let html = `<table style="width:100%; font-size:11px;"><tr><th>USER</th><th>IP</th><th>AKSI</th></tr>`;
+        db.forEach((usr, i) => {
+            html += `<tr>
+                <td>${usr.u}</td>
+                <td>${usr.ip || 'Offline'}</td>
+                <td>${usr.role === 'OWNER' ? '⭐' : `<button class="btn-ban" onclick="banIP('${usr.ip}')">BAN IP</button>`}</td>
             </tr>`;
         });
-        document.getElementById('user-table-area').innerHTML = h + `</table>`;
+        document.getElementById('user-list-table').innerHTML = html + `</table>`;
     }
 
-    function addAcc() {
-        const nu = document.getElementById('nu').value;
-        const np = document.getElementById('np').value;
-        const nr = document.getElementById('nr').value;
-        if(!nu || !np) return alert("Isi Data!");
+    function banIP(ip) {
+        if(!ip || ip === "Offline") return alert("IP tidak terdeteksi!");
+        let blacklist = JSON.parse(localStorage.getItem("ip_blacklist")) || [];
+        if(!blacklist.includes(ip)) {
+            blacklist.push(ip);
+            localStorage.setItem("ip_blacklist", JSON.stringify(blacklist));
+            alert("IP " + ip + " BERHASIL DI-BAN!");
+            location.reload();
+        }
+    }
 
+    function addUser() {
         let db = JSON.parse(localStorage.getItem("db"));
-        db.push({u: nu, p: np, role: nr});
+        db.push({u:document.getElementById('nu').value, p:document.getElementById('np').value, role:"MEMBER", ip:""});
         localStorage.setItem("db", JSON.stringify(db));
-        alert("Suksess! Akun Member Aktif.");
-        document.getElementById('nu').value = "";
-        document.getElementById('np').value = "";
-        showUsers();
+        refreshUsers();
     }
 
-    function hapusUser(i) {
-        if(confirm("Hapus akun pembeli ini?")) {
-            let db = JSON.parse(localStorage.
+    function loadLogs() {
+        setInterval(() => {
+            const logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
+            document.getElementById('logs-view').innerHTML = logs.map(l => `<div style="padding:5px; border-bottom:1px solid #eee;">${l}</div>`).join('') || "Kosong.";
+        }, 2000);
+    }
+
+    function doLogout() { sessionStorage.clear(); location.reload(); }
+</script>
+</body>
+</html>
