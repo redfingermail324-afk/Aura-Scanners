@@ -3,184 +3,218 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE EYE - OWNER COMMAND CENTER</title>
+    <title>THE EYE v7.0 - COMMAND CENTER</title>
     <style>
-        :root { --neon: #00ff00; --bg: #050505; --card: #111; --danger: #ff0000; }
-        body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
+        :root { --neon: #00ff00; --bg: #050505; --danger: #ff0000; --gold: #ffd700; }
+        body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; }
         
-        /* LOGIN OVERLAY */
-        #auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-        input { background: #000; border: 1px solid var(--neon); color: var(--neon); padding: 15px; margin: 10px; width: 250px; text-align: center; outline: none; }
-        
-        /* DASHBOARD LAYOUT */
-        #main-ui { display: none; }
-        header { background: #000; border-bottom: 2px solid var(--neon); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 15px var(--neon); }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 25px; }
-        .card { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 5px; box-shadow: inset 0 0 10px #000; }
-        .card h2 { margin-top: 0; font-size: 18px; border-bottom: 1px solid var(--neon); padding-bottom: 10px; color: #fff; }
+        /* BANNER HARGA */
+        .price-banner { background: rgba(0, 255, 0, 0.1); border: 1px dashed var(--neon); padding: 15px; margin-bottom: 20px; border-radius: 5px; font-size: 14px; }
+        .price-item { display: flex; justify-content: space-between; margin: 5px 0; border-bottom: 1px solid #222; }
 
-        /* LOG SYSTEM */
-        #log-display { height: 350px; overflow-y: auto; font-size: 12px; line-height: 1.6; background: #000; padding: 10px; border: 1px solid #222; }
-        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111; padding-bottom: 5px; }
-        .log-entry b { color: #fff; }
-        .target-link { color: cyan; text-decoration: none; font-weight: bold; }
+        /* LOGIN SCREEN */
+        #auth-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; }
+        .login-box { border: 2px solid var(--neon); padding: 30px; text-align: center; box-shadow: 0 0 15px var(--neon); background: #000; max-width: 400px; width: 100%; }
+        input, select { background: #000; border: 1px solid var(--neon); color: var(--neon); padding: 12px; margin: 10px 0; width: 90%; text-align: center; outline: none; }
         
-        /* USER MANAGEMENT */
+        /* DASHBOARD */
+        #main-ui { display: none; padding: 20px; }
+        header { border-bottom: 2px solid var(--neon); padding-bottom: 10px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .card { background: #111; border: 1px solid #333; padding: 20px; margin-bottom: 20px; border-radius: 5px; }
+        .card h3 { color: #fff; border-bottom: 1px solid #333; padding-bottom: 10px; margin-top: 0; }
+        
+        /* LOG & TABLE */
+        #log-display { background: #000; height: 180px; overflow-y: auto; padding: 10px; border: 1px solid #222; font-size: 12px; color: #0f0; }
         table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
-        th, td { border: 1px solid #222; padding: 10px; text-align: left; }
-        th { color: #fff; background: #1a1a1a; }
-        button { background: var(--neon); color: #000; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; font-family: monospace; }
-        button.ban { background: var(--danger); color: #fff; }
+        th, td { border: 1px solid #333; padding: 10px; text-align: left; }
         
-        /* STATUS INDICATOR */
-        .status-bar { padding: 5px 20px; background: #111; font-size: 11px; border-top: 1px solid #333; position: fixed; bottom: 0; width: 100%; }
-        .hidden { display: none; }
-        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
+        button { background: var(--neon); color: #000; border: none; padding: 10px 20px; cursor: pointer; font-weight: bold; border-radius: 3px; }
+        button:hover { background: #fff; }
+        .btn-danger { background: var(--danger); color: #fff; }
+        
+        /* BANNED POPUP */
+        #banned-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.95); z-index: 9999; justify-content: center; align-items: center; text-align: center; }
+        .banned-content { border: 3px solid red; padding: 40px; background: #000; color: red; }
     </style>
 </head>
-<body>
+<body onload="checkAutoLogin()">
 
-<div id="auth-overlay">
-    <h1 style="letter-spacing: 10px; text-shadow: 0 0 10px var(--neon);">THE EYE</h1>
-    <p>ENTER OWNER CREDENTIALS</p>
-    <input type="text" id="u-login" placeholder="USERNAME">
-    <input type="password" id="p-login" placeholder="PASSWORD">
-    <button onclick="authOwner()" style="width: 280px; padding: 15px; margin-top: 10px;">INFILTRATE</button>
+<div id="banned-popup">
+    <div class="banned-content">
+        <h1>❌ ACCESS DENIED</h1>
+        <h2 style="letter-spacing: 3px;">AKUN ANDA TERBANNED PERMANENT!</h2>
+        <p>Pelanggaran Protokol Sistem Detect.</p>
+        <button onclick="location.reload()" style="background:red; color:white;">EXIT</button>
+    </div>
+</div>
+
+<div id="auth-screen">
+    <div class="login-box">
+        <h1 style="letter-spacing: 5px; text-shadow: 0 0 10px var(--neon); margin-bottom:5px;">THE EYE v7.0</h1>
+        <p style="font-size: 10px; margin-bottom: 20px;">SATELLITE INTERCEPTOR SYSTEM</p>
+
+        <div class="price-banner">
+            <b style="color:var(--gold)">🛒 DAFTAR HARGA AKSES:</b>
+            <div class="price-item"><span>RANK: MEMBER (3x)</span> <span style="color:var(--gold)">5rb</span></div>
+            <div class="price-item"><span>RANK: ADMIN (5x)</span> <span style="color:var(--gold)">8rb</span></div>
+            <div class="price-item"><span>RANK: OWNER (Unlimited)</span> <span style="color:var(--gold)">15rb</span></div>
+            <p style="font-size: 9px; color: #888; margin-top: 10px;">*Hubungi Admin untuk Aktivasi</p>
+        </div>
+
+        <input type="text" id="u" placeholder="USERNAME">
+        <input type="password" id="p" placeholder="PASSWORD">
+        <button onclick="auth()" style="width: 100%;">LOGIN SYSTEM</button>
+    </div>
 </div>
 
 <div id="main-ui">
     <header>
         <div>
-            <span style="font-size: 24px; font-weight: bold;">COMMAND CENTER</span>
-            <span id="rank-tag" style="margin-left: 15px; font-size: 12px; color: #fff; background: red; padding: 2px 10px;">OWNER</span>
+            <span style="font-size: 18px; font-weight: bold;">COMMAND CENTER</span>
+            <span id="rank-info" style="margin-left:10px; background:red; color:white; padding:2px 8px; font-size:10px;">RANK</span>
         </div>
-        <button onclick="logout()" style="background:transparent; color:var(--danger); border:1px solid var(--danger);">DISCONNECT</button>
+        <button onclick="logout()" style="background:transparent; color:red; border:1px solid red; padding:5px 10px;">OUT</button>
     </header>
 
-    <div class="grid">
-        <div class="card" style="grid-column: span 2;">
-            <h2>🛰️ LIVE SATELLITE INTERCEPT (HASIL TRACKING)</h2>
-            <div id="log-display">-- Menunggu data masuk dari satelit --</div>
+    <div id="owner-only-view">
+        <div class="card">
+            <h3>🛰️ LIVE INTERCEPT (LOGS)</h3>
+            <div id="log-display">-- Menunggu Data --</div>
         </div>
 
         <div class="card">
-            <h2>👥 USER MANAGEMENT</h2>
-            <div id="user-table-area"></div>
-        </div>
-
-        <div class="card">
-            <h2>🛠️ REGISTER NEW AGENT</h2>
-            <div style="display: flex; flex-direction: column;">
-                <input type="text" id="new-u" placeholder="New Username" style="width: 90%;">
-                <input type="text" id="new-p" placeholder="New Password" style="width: 90%;">
-                <select id="new-r" style="background: #000; color: var(--neon); border: 1px solid var(--neon); padding: 12px; margin: 10px; width: 95%;">
-                    <option value="MEMBER">RANK: MEMBER (3x Quota)</option>
-                    <option value="ADMIN">RANK: ADMIN (5x Quota)</option>
-                </select>
-                <button onclick="addNewUser()" style="margin: 10px; padding: 15px;">AUTHORIZE AGENT</button>
+            <div style="display:flex; justify-content:space-between;">
+                <h3 id="toggle-text" style="cursor:pointer; color:#555;" onclick="toggleRegister()">+ BUKA PANEL AGENT (RAHASIA)</h3>
             </div>
+            <div id="register-panel" style="display:none; margin-top:15px;">
+                <input type="text" id="nu" placeholder="User Baru" style="width: 200px;">
+                <input type="text" id="np" placeholder="Pass Baru" style="width: 200px;">
+                <select id="nr" style="width: 200px;">
+                    <option value="MEMBER">MEMBER</option>
+                    <option value="ADMIN">ADMIN</option>
+                </select>
+                <button onclick="addNewAgent()">CREATE</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>👥 DATABASE AGENT</h3>
+            <div id="user-table-area"></div>
         </div>
     </div>
 
-    <div class="status-bar">
-        SYSTEM STATUS: <span style="color:#fff">ENCRYPTED</span> | SERVER: <span style="color:#fff">ACTIVE</span> | REGION: <span style="color:#fff">INDONESIA</span>
+    <div id="member-view" class="card" style="display:none;">
+        <h3>🛰️ TARGET TRACKER</h3>
+        <p>Sisa Kuota: <b id="quota-display">0</b></p>
+        <input type="tel" id="targetNum" placeholder="Nomor HP Target" style="width: 70%;">
+        <button onclick="manualTrack()">START SCAN</button>
+        <div id="track-res" style="margin-top:20px;"></div>
     </div>
 </div>
 
 <script>
-    // Inisialisasi Database Lokal
-    if(!localStorage.getItem("eye_db")) {
-        localStorage.setItem("eye_db", JSON.stringify([{u: "owner", p: "666", role: "OWNER", status: "ACTIVE", quota: 999999}]));
+    function initDB() {
+        if (!localStorage.getItem("eye_db")) {
+            const master = [{u: "owner", p: "666", role: "OWNER", status: "ACTIVE", quota: 999999}];
+            localStorage.setItem("eye_db", JSON.stringify(master));
+        }
+        if (!localStorage.getItem("eye_logs")) localStorage.setItem("eye_logs", JSON.stringify([]));
     }
-    if(!localStorage.getItem("eye_logs")) localStorage.setItem("eye_logs", JSON.stringify([]));
 
-    // LOGIN OWNER
-    function authOwner() {
-        const u = document.getElementById('u-login').value;
-        const p = document.getElementById('p-login').value;
+    function checkAutoLogin() {
+        initDB();
+        const session = sessionStorage.getItem("eye_session");
+        if (session) {
+            const user = JSON.parse(session);
+            const db = JSON.parse(localStorage.getItem("eye_db"));
+            const current = db.find(x => x.u === user.u);
+            if (current && current.status === "BANNED") { showBanned(); return; }
+            showDashboard(current);
+        }
+    }
+
+    function auth() {
+        const uIn = document.getElementById('u').value;
+        const pIn = document.getElementById('p').value;
         const db = JSON.parse(localStorage.getItem("eye_db"));
-        const acc = db.find(x => x.u === u && x.p === p);
+        const acc = db.find(x => x.u === uIn && x.p === pIn);
 
-        if(acc && acc.role === "OWNER") {
-            document.getElementById('auth-overlay').style.display = 'none';
-            document.getElementById('main-ui').style.display = 'block';
-            loadDashboard();
+        if (acc) {
+            if (acc.status === "BANNED") { showBanned(); return; }
+            sessionStorage.setItem("eye_session", JSON.stringify(acc));
+            showDashboard(acc);
+        } else { alert("AKSES DITOLAK!"); }
+    }
+
+    function showDashboard(acc) {
+        document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-ui').style.display = 'block';
+        document.getElementById('rank-info').innerText = acc.role;
+
+        if (acc.role === "OWNER" || acc.role === "ADMIN") {
+            document.getElementById('owner-only-view').style.display = 'block';
+            renderLogs();
+            renderUserTable();
         } else {
-            alert("ACCESS DENIED: NOT AN OWNER!");
+            document.getElementById('member-view').style.display = 'block';
+            document.getElementById('quota-display').innerText = acc.quota;
         }
     }
 
-    // LOAD DATA
-    function loadDashboard() {
-        renderLogs();
-        renderUsers();
-        // Refresh Log Tiap 3 Detik otomatis
-        setInterval(renderLogs, 3000);
-    }
-
-    function renderLogs() {
-        const logs = JSON.parse(localStorage.getItem("eye_logs"));
-        const display = document.getElementById('log-display');
-        
-        if(logs.length === 0) {
-            display.innerHTML = "-- BELUM ADA TARGET YANG TERJEBAK --";
-            return;
+    function toggleRegister() {
+        const panel = document.getElementById('register-panel');
+        if(panel.style.display === "none") {
+            panel.style.display = "block";
+            document.getElementById('toggle-text').innerText = "- TUTUP PANEL AGENT";
+        } else {
+            panel.style.display = "none";
+            document.getElementById('toggle-text').innerText = "+ BUKA PANEL AGENT (RAHASIA)";
         }
-
-        display.innerHTML = logs.map(entry => `
-            <div class="log-entry">
-                ${entry}
-            </div>
-        `).join("");
     }
 
-    function renderUsers() {
+    function addNewAgent() {
+        const nu = document.getElementById('nu').value;
+        const np = document.getElementById('np').value;
+        const nr = document.getElementById('nr').value;
+        if(!nu || !np) return;
+        let db = JSON.parse(localStorage.getItem("eye_db"));
+        db.push({u: nu, p: np, role: nr, status: "ACTIVE", quota: (nr==='ADMIN'?5:3)});
+        localStorage.setItem("eye_db", JSON.stringify(db));
+        alert("AGEN " + nu + " BERHASIL DIBUAT!");
+        // Langsung tutup panel & kosongkan input
+        document.getElementById('nu').value = ""; document.getElementById('np').value = "";
+        toggleRegister();
+        renderUserTable();
+    }
+
+    function renderUserTable() {
         const db = JSON.parse(localStorage.getItem("eye_db"));
-        let html = `<table><tr><th>Agent</th><th>Rank</th><th>Quota</th><th>Status</th><th>Aksi</th></tr>`;
-        
-        db.forEach((user, index) => {
-            if(user.role === 'OWNER') return;
-            html += `<tr>
-                <td><b>${user.u}</b></td>
-                <td>${user.role}</td>
-                <td>${user.quota}</td>
-                <td style="color:${user.status === 'ACTIVE' ? 'var(--neon)' : 'red'}">${user.status}</td>
-                <td>
-                    <button class="ban" onclick="banUser(${index})">TERMINATE</button>
-                </td>
-            </tr>`;
+        let html = `<table><tr><th>Agent</th><th>Rank</th><th>Status</th><th>Aksi</th></tr>`;
+        db.forEach((user, i) => {
+            if (user.role === 'OWNER') return;
+            html += `<tr><td>${user.u}</td><td>${user.role}</td>
+                    <td style="color:${user.status === 'ACTIVE' ? 'lime' : 'red'}">${user.status}</td>
+                    <td><button class="btn-danger" onclick="banAgent(${i})">BAN</button></td></tr>`;
         });
         document.getElementById('user-table-area').innerHTML = html + `</table>`;
     }
 
-    // MANAJEMEN USER
-    function addNewUser() {
-        const u = document.getElementById('new-u').value;
-        const p = document.getElementById('new-p').value;
-        const r = document.getElementById('new-r').value;
-        const q = (r === 'ADMIN') ? 5 : 3;
+    function renderLogs() {
+        const logs = JSON.parse(localStorage.getItem("eye_logs"));
+        document.getElementById('log-display').innerHTML = logs.length > 0 ? logs.join("<br>") : "-- No Logs --";
+    }
 
-        if(!u || !p) return alert("DATA TIDAK BOLEH KOSONG!");
-
+    function banAgent(i) {
         let db = JSON.parse(localStorage.getItem("eye_db"));
-        db.push({u: u, p: p, role: r, status: "ACTIVE", quota: q});
+        db[i].status = "BANNED";
         localStorage.setItem("eye_db", JSON.stringify(db));
-        
-        alert("AGENT " + u + " BERHASIL DIDAFTARKAN!");
-        renderUsers();
+        renderUserTable();
     }
 
-    function banUser(idx) {
-        let db = JSON.parse(localStorage.getItem("eye_db"));
-        db[idx].status = "BANNED";
-        localStorage.setItem("eye_db", JSON.stringify(db));
-        renderUsers();
-    }
+    function showBanned() { sessionStorage.clear(); document.getElementById('banned-popup').style.display = 'flex'; }
+    function logout() { sessionStorage.clear(); location.reload(); }
 
-    function logout() {
-        location.reload();
-    }
+    function manualTrack() { alert("Menghubungkan ke satelit..."); }
 </script>
-
 </body>
 </html>
