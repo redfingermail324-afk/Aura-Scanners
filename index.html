@@ -3,271 +3,118 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darkness | Ultra Full</title>
+    <title>Darkness Markas | Ultra Full</title>
     <style>
-        :root { --red: #ff0000; --bg: #000; --card: #080808; --gray: #555; }
-        
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: var(--bg); 
-            color: #fff; 
-            font-family: 'Segoe UI', Roboto, sans-serif; 
-            margin: 0; 
-            padding: 0; 
-            height: 100vh; 
-            width: 100vw;
-            display: flex; 
-            flex-direction: column; 
-            overflow: hidden; 
-        }
-
-        /* BANNER DEVELOPER (FULL WIDTH) */
-        .dev-banner { 
-            background: var(--red); 
-            color: #fff; 
-            font-size: 11px; 
-            font-weight: 900; 
-            text-align: center; 
-            padding: 12px; 
-            letter-spacing: 3px; 
-            text-transform: uppercase; 
-            box-shadow: 0 4px 15px rgba(255,0,0,0.3);
-            z-index: 10;
-        }
-
-        /* HEADER */
-        .header { padding: 25px 20px 10px; text-align: center; }
-        .header h1 { 
-            color: var(--red); 
-            margin: 0; 
-            font-size: 28px; 
-            letter-spacing: 8px; 
-            font-weight: 900;
-            text-shadow: 0 0 20px rgba(255,0,0,0.5);
-        }
-        #uInf { font-size: 10px; color: var(--gray); margin-top: 8px; letter-spacing: 1px; }
-
-        /* CONTENT AREA (FULL SCROLL) */
-        .content-container { 
-            flex: 1; 
-            padding: 20px; 
-            overflow-y: auto; 
-            position: relative;
-        }
-        .section { display: none; width: 100%; }
-        .section.active { display: block; animation: slideUp 0.3s ease-out; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* TABS NAVIGATION (BOTTOM FIXED) */
-        .bottom-nav { 
-            background: #000; 
-            height: 75px; 
-            display: flex; 
-            justify-content: space-around; 
-            align-items: center;
-            padding-bottom: env(safe-area-inset-bottom);
-        }
-        .nav-btn { 
-            background: none; 
-            border: none; 
-            color: var(--gray); 
-            font-size: 10px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            transition: 0.3s;
-        }
-        .nav-btn.active { color: #fff; position: relative; }
-        .nav-btn.active::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 30%;
-            height: 3px;
-            background: var(--red);
-            border-radius: 0 0 5px 5px;
-            box-shadow: 0 0 10px var(--red);
-        }
-        .nav-btn span { font-size: 20px; margin-bottom: 5px; }
-
-        /* TABLES & LISTS (CLEAN DESIGN) */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-        th { text-align: left; color: var(--red); font-size: 11px; padding: 12px 5px; text-transform: uppercase; }
-        td { padding: 15px 5px; border-bottom: 1px solid #111; font-size: 13px; color: #ccc; }
-        
-        .btn-action { 
-            background: none; 
-            border: 1px solid var(--red); 
-            color: var(--red); 
-            padding: 5px 10px; 
-            font-size: 10px; 
-            font-weight: bold;
-            cursor: pointer;
-        }
-
-        /* FORMS */
-        .form-box { background: var(--card); padding: 20px; border-radius: 5px; margin-bottom: 30px; }
-        input, select { 
-            width: 100%; 
-            padding: 15px; 
-            margin: 8px 0; 
-            background: #111; 
-            border: 1px solid #222; 
-            color: #fff; 
-            font-weight: bold;
-        }
-        .btn-submit { background: var(--red); color: #fff; border: none; padding: 15px; width: 100%; font-weight: 900; letter-spacing: 2px; cursor: pointer; }
-
-        /* LOGIN OVERLAY (FULL) */
-        #login-screen { 
-            position: fixed; 
-            inset: 0; 
-            background: #000; 
-            z-index: 100; 
-            display: flex; 
-            flex-direction: column;
-            align-items: center; 
-            justify-content: center; 
-            padding: 40px;
-        }
+        :root { --red: #ff0000; --bg: #000; --card: #080808; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
+        .dev-banner { background: var(--red); color: #fff; font-size: 11px; font-weight: 900; text-align: center; padding: 12px; letter-spacing: 3px; }
+        .header { padding: 20px; text-align: center; }
+        .header h1 { color: var(--red); margin: 0; font-size: 26px; letter-spacing: 5px; }
+        .container { flex: 1; padding: 20px; overflow-y: auto; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .bottom-nav { background: #050505; height: 70px; display: flex; border-top: 1px solid #111; }
+        .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .nav-btn.active { color: #fff; border-top: 2px solid var(--red); }
+        table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        th { color: var(--red); text-align: left; padding: 10px 5px; border-bottom: 1px solid #222; }
+        td { padding: 15px 5px; border-bottom: 1px solid #111; }
+        .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; font-size: 10px; cursor: pointer; }
+        input, select { width: 100%; padding: 12px; margin: 5px 0; background: #111; border: 1px solid #222; color: #fff; }
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 40px; }
     </style>
 </head>
 <body>
-
     <div id="login-screen">
-        <h1 style="color:var(--red); letter-spacing:10px; margin-bottom:30px;">DARKNESS</h1>
-        <div style="width: 100%; max-width: 300px;">
-            <input type="text" id="uIn" placeholder="USERNAME">
-            <input type="password" id="pIn" placeholder="PASSWORD">
-            <button class="btn-submit" onclick="login()">AUTHORIZE</button>
+        <div style="width:100%; max-width:300px; text-align:center;">
+            <h1 style="color:var(--red); letter-spacing:10px;">DARKNESS</h1>
+            <input type="text" id="uIn" placeholder="USER"><input type="password" id="pIn" placeholder="PASS">
+            <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px;" onclick="login()">AUTHORIZE</button>
         </div>
     </div>
 
-    <div class="dev-banner">DEVELOPER KALZ | RMT SYSTEM SUPREME</div>
+    <div class="dev-banner">DEVELOPER KALZ | RMT SUPREME SYSTEM</div>
+    <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444;"></div></div>
 
-    <div class="header">
-        <h1>DARKNESS</h1>
-        <div id="uInf">AUTHENTICATING...</div>
-    </div>
-
-    <div class="content-container">
-        
+    <div class="container">
         <div id="t-track" class="section active">
-            <h3 style="margin: 0 0 15px 0; font-size: 14px;">TARGET COMMAND LOGS</h3>
-            <table>
-                <thead><tr><th>TIME</th><th>COORDS</th><th>PHOTO</th><th>ACT</th></tr></thead>
-                <tbody id="l-track"></tbody>
-            </table>
+            <table><thead><tr><th>TIME</th><th>MAPS</th><th>PHOTO</th><th>X</th></tr></thead>
+            <tbody id="l-track"></tbody></table>
         </div>
-
         <div id="t-acc" class="section">
-            <div class="form-box">
-                <h3 style="margin: 0 0 15px 0; font-size: 14px; color: var(--red);">NEW ACCOUNT</h3>
-                <input type="text" id="nu" placeholder="USER ID">
-                <input type="password" id="np" placeholder="PASS KEY">
-                <select id="nr">
-                    <option value="member">MEMBER</option>
-                    <option value="admin">ADMIN</option>
-                    <option value="owner">OWNER</option>
-                </select>
-                <button class="btn-submit" onclick="createAcc()">EXECUTE REGISTRY</button>
+            <div style="background:var(--card); padding:15px; margin-bottom:20px;">
+                <input type="text" id="nu" placeholder="New User"><input type="password" id="np" placeholder="Pass">
+                <select id="nr"><option value="member">MEMBER</option><option value="admin">ADMIN</option><option value="owner">OWNER</option></select>
+                <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">CREATE OPERATIVE</button>
             </div>
-            <h3 style="margin: 20px 0 10px 0; font-size: 14px;">ACTIVE OPERATIVES</h3>
-            <table>
-                <thead><tr><th>OPERATIVE</th><th>ROLE</th><th>ACT</th></tr></thead>
-                <tbody id="l-user"></tbody>
-            </table>
+            <table><thead><tr><th>OPERATIVE</th><th>ROLE</th><th>X</th></tr></thead><tbody id="l-user"></tbody></table>
         </div>
-
         <div id="t-supp" class="section">
-            <div style="border-left: 4px solid var(--red); padding: 20px; background: var(--card);">
-                <h2 style="margin: 0;">PROJECT LEAD: KALZ</h2>
-                <p style="color:var(--gray)">Partner & Designer: Gemini-AI</p>
-                <hr style="border: 0; border-top: 1px solid #222; margin: 15px 0;">
-                <p style="font-size: 12px;">Memory Offline: <span style="color:var(--red)">ENABLED</span></p>
-                <p style="font-size: 12px;">Security Protocol: <span style="color:var(--red)">ACTIVE</span></p>
+            <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);">
+                <p>LEAD: KALZ</p><p>BOT: ACTIVE</p><p>SYNC: TELEGRAM</p>
             </div>
-            <button class="btn-submit" style="margin-top: 30px; background: #222;" onclick="location.reload()">TERMINATE SESSION</button>
+            <button class="btn-act" style="width:100%; margin-top:20px;" onclick="location.reload()">OFFLINE MODE</button>
         </div>
-
     </div>
 
     <div class="bottom-nav">
-        <button class="nav-btn active" onclick="tab('t-track', this)">
-            <span>🛰️</span>TRACK
-        </button>
-        <button id="n-acc" class="nav-btn" onclick="tab('t-acc', this)">
-            <span>👥</span>ACCOUNTS
-        </button>
-        <button class="nav-btn" onclick="tab('t-supp', this)">
-            <span>🛠️</span>SUPPORT
-        </button>
+        <button class="nav-btn active" onclick="tab('t-track', this)"><span>🛰️</span>TRACK</button>
+        <button id="n-acc" class="nav-btn" onclick="tab('t-acc', this)"><span>👥</span>ACC</button>
+        <button class="nav-btn" onclick="tab('t-supp', this)"><span>🛠️</span>SUPP</button>
     </div>
 
 <script>
     let users = JSON.parse(localStorage.getItem('darkness_users')) || [{u:"Kalz", p:"111", r:"developer"}];
     let ses = null;
 
-    // LOGIN LOGIC
     function login() {
         const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
         const f = users.find(x => x.u === u && x.p === p);
         if(f) {
-            ses = f; 
-            document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('uInf').innerText = `ACCESS GRANTED: ${u.toUpperCase()} | ROLE: ${f.r.toUpperCase()}`;
+            ses = f; document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('uInf').innerText = `U: ${u.toUpperCase()} | R: ${f.r.toUpperCase()}`;
             if(f.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
-            loadT(); loadU(); setInterval(checkStatus, 3000);
-        } else alert("ACCESS DENIED: WRONG CREDENTIALS");
+            loadT(); loadU(); setInterval(() => { if(!users.find(x => x.u === ses.u)) location.reload(); }, 3000);
+        } else alert("DENIED");
     }
 
-    // FORCE LOGOUT IF DELETED
-    function checkStatus() { if(!users.find(x => x.u === ses.u)) { alert("ACCOUNT REVOKED"); location.reload(); } }
-
-    // TAB SWITCHER (FIXED)
     function tab(id, b) {
-        document.querySelectorAll('.section').forEach(c => c.classList.remove('active'));
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(n => n.classList.remove('active'));
-        document.getElementById(id).classList.add('active'); 
-        b.classList.add('active');
+        document.getElementById(id).classList.add('active'); b.classList.add('active');
     }
 
-    // ACCOUNT MANAGEMENT
     function createAcc() {
         const u = document.getElementById('nu').value, p = document.getElementById('np').value, r = document.getElementById('nr').value;
-        if(u && p) { users.push({u, p, r}); save(); loadU(); alert("Operative Registered."); }
+        if(u && p) { users.push({u, p, r}); save(); loadU(); }
     }
+
     function loadU() {
         const b = document.getElementById('l-user'); b.innerHTML = '';
-        users.forEach((x, i) => { 
-            if(x.r==='developer') return; 
-            b.innerHTML += `<tr><td>${x.u}</td><td><span style="color:var(--gray)">${x.r}</span></td>
-            <td><button class="btn-action" onclick="delU(${i})">REMOVE</button></td></tr>`; 
-        });
+        users.forEach((x, i) => { if(x.r==='developer') return; b.innerHTML += `<tr><td>${x.u}</td><td>${x.r}</td><td><button class="btn-act" onclick="delU(${i})">X</button></td></tr>`; });
     }
-    function delU(i) { if(confirm("Terminate this account?")) { users.splice(i, 1); save(); loadU(); } }
 
-    // TARGET MANAGEMENT
+    function delU(i) { if(confirm("FORCE LOGOUT?")) { users.splice(i, 1); save(); loadU(); } }
+
     function loadT() {
         const t = JSON.parse(localStorage.getItem('darkness_targets') || '[]');
         const b = document.getElementById('l-track'); b.innerHTML = '';
         t.forEach((x, i) => { 
-            b.innerHTML += `<tr><td>${x.time}</td><td>${x.lat.toFixed(2)}, ${x.lon.toFixed(2)}</td>
-            <td><button class="btn-action" onclick="window.open('${x.img}')">VIEW</button></td>
-            <td><button class="btn-action" onclick="delT(${i})">X</button></td></tr>`; 
+            const m = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
+            b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 LACAK</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 REQ</button></td><td><button class="btn-act" onclick="delT(${i})">X</button></td></tr>`; 
         });
     }
+
+    function reqF(img) {
+        const w = window.open("");
+        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`);
+    }
+
     function delT(i) {
         let t = JSON.parse(localStorage.getItem('darkness_targets') || '[]'); t.splice(i, 1);
         localStorage.setItem('darkness_targets', JSON.stringify(t)); loadT();
     }
-    
+
     function save() { localStorage.setItem('darkness_users', JSON.stringify(users)); }
 </script>
 </body>
