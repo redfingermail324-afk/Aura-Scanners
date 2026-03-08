@@ -3,57 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darkness Markas | Ultra Full</title>
+    <title>Darkness | Markas Supreme</title>
     <style>
         :root { --red: #ff0000; --bg: #000; --card: #080808; }
-        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; padding: 0; height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        .dev-banner { background: var(--red); color: #fff; font-size: 11px; font-weight: 900; text-align: center; padding: 12px; letter-spacing: 3px; }
-        .header { padding: 20px; text-align: center; }
+        body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .banner { background: var(--red); color: #fff; font-size: 11px; font-weight: 900; text-align: center; padding: 12px; letter-spacing: 3px; }
+        .header { padding: 20px; text-align: center; border-bottom: 1px solid #111; }
         .header h1 { color: var(--red); margin: 0; font-size: 26px; letter-spacing: 5px; }
         .container { flex: 1; padding: 20px; overflow-y: auto; }
         .section { display: none; }
-        .section.active { display: block; }
-        .bottom-nav { background: #050505; height: 70px; display: flex; border-top: 1px solid #111; }
-        .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 10px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .nav-btn.active { color: #fff; border-top: 2px solid var(--red); }
+        .section.active { display: block; animation: slideUp 0.3s; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .bottom-nav { background: #050505; height: 80px; display: flex; border-top: 1px solid #111; }
+        .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; }
+        .nav-btn.active { color: #fff; border-top: 3px solid var(--red); }
+        .nav-btn span { font-size: 24px; margin-bottom: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { color: var(--red); text-align: left; padding: 10px 5px; border-bottom: 1px solid #222; }
         td { padding: 15px 5px; border-bottom: 1px solid #111; }
-        .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 5px 10px; font-size: 10px; cursor: pointer; }
-        input, select { width: 100%; padding: 12px; margin: 5px 0; background: #111; border: 1px solid #222; color: #fff; }
-        #login-screen { position: fixed; inset: 0; background: #000; z-index: 100; display: flex; align-items: center; justify-content: center; padding: 40px; }
+        .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; font-size: 10px; cursor: pointer; font-weight: bold; }
+        .form-box { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 25px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; border-radius: 4px; }
+        #login-screen { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; align-items: center; justify-content: center; padding: 40px; }
     </style>
 </head>
 <body>
     <div id="login-screen">
         <div style="width:100%; max-width:300px; text-align:center;">
             <h1 style="color:var(--red); letter-spacing:10px;">DARKNESS</h1>
-            <input type="text" id="uIn" placeholder="USER"><input type="password" id="pIn" placeholder="PASS">
+            <input type="text" id="uIn" placeholder="USER ID"><input type="password" id="pIn" placeholder="PASS KEY">
             <button style="background:var(--red); color:#fff; border:none; padding:15px; width:100%; font-weight:bold; margin-top:10px;" onclick="login()">AUTHORIZE</button>
         </div>
     </div>
 
-    <div class="dev-banner">DEVELOPER KALZ | RMT SUPREME SYSTEM</div>
-    <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444;"></div></div>
+    <div class="banner">DEVELOPER KALZ | RMT SUPREME SYSTEM</div>
+    <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444; margin-top:5px;"></div></div>
 
     <div class="container">
         <div id="t-track" class="section active">
-            <table><thead><tr><th>TIME</th><th>MAPS</th><th>PHOTO</th><th>X</th></tr></thead>
+            <h3 style="font-size: 14px; margin-bottom: 10px;">🛰️ TARGET LOGS</h3>
+            <table><thead><tr><th>WAKTU</th><th>MAPS</th><th>FOTO</th><th>X</th></tr></thead>
             <tbody id="l-track"></tbody></table>
         </div>
+
         <div id="t-acc" class="section">
-            <div style="background:var(--card); padding:15px; margin-bottom:20px;">
-                <input type="text" id="nu" placeholder="New User"><input type="password" id="np" placeholder="Pass">
+            <div class="form-box">
+                <h3 style="color:var(--red); margin:0 0 10px 0;">CREATE ACCOUNT</h3>
+                <input type="text" id="nu" placeholder="USER"><input type="password" id="np" placeholder="PASS">
                 <select id="nr"><option value="member">MEMBER</option><option value="admin">ADMIN</option><option value="owner">OWNER</option></select>
-                <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">CREATE OPERATIVE</button>
+                <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">EXECUTE REGISTRY</button>
             </div>
-            <table><thead><tr><th>OPERATIVE</th><th>ROLE</th><th>X</th></tr></thead><tbody id="l-user"></tbody></table>
+            <h3>OPERATIVES</h3>
+            <table><thead><tr><th>USER</th><th>ROLE</th><th>ACT</th></tr></thead><tbody id="l-user"></tbody></table>
         </div>
+
         <div id="t-supp" class="section">
             <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);">
-                <p>LEAD: KALZ</p><p>BOT: ACTIVE</p><p>SYNC: TELEGRAM</p>
+                <p>LEAD: KALZ</p><p>SYNC: TELEGRAM ACTIVE</p><p>MEMORY: OFFLINE STABLE</p>
             </div>
-            <button class="btn-act" style="width:100%; margin-top:20px;" onclick="location.reload()">OFFLINE MODE</button>
+            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">TERMINATE SESSION</button>
         </div>
     </div>
 
@@ -72,9 +80,10 @@
         const f = users.find(x => x.u === u && x.p === p);
         if(f) {
             ses = f; document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('uInf').innerText = `U: ${u.toUpperCase()} | R: ${f.r.toUpperCase()}`;
+            document.getElementById('uInf').innerText = `ACCESS: ${u.toUpperCase()} | ROLE: ${f.r.toUpperCase()}`;
             if(f.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
-            loadT(); loadU(); setInterval(() => { if(!users.find(x => x.u === ses.u)) location.reload(); }, 3000);
+            loadT(); loadU(); 
+            setInterval(() => { if(!users.find(x => x.u === ses.u)) location.reload(); }, 3000);
         } else alert("DENIED");
     }
 
@@ -86,7 +95,7 @@
 
     function createAcc() {
         const u = document.getElementById('nu').value, p = document.getElementById('np').value, r = document.getElementById('nr').value;
-        if(u && p) { users.push({u, p, r}); save(); loadU(); }
+        if(u && p) { users.push({u, p, r}); save(); loadU(); alert("Operative Registered!"); }
     }
 
     function loadU() {
@@ -101,13 +110,13 @@
         const b = document.getElementById('l-track'); b.innerHTML = '';
         t.forEach((x, i) => { 
             const m = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
-            b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 LACAK</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 REQ</button></td><td><button class="btn-act" onclick="delT(${i})">X</button></td></tr>`; 
+            b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT(${i})">X</button></td></tr>`; 
         });
     }
 
     function reqF(img) {
         const w = window.open("");
-        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`);
+        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;box-shadow:0 0 20px red;"></body>`);
     }
 
     function delT(i) {
